@@ -1247,7 +1247,8 @@ class GenomicRegionSet:
             similarity: (5+4+2)/[(8+10+4)+(10+10)-(5+4+2)] = 11/31
         """
         a = copy.deepcopy(self)
-        b = copy.deepcopy(query)
+        # b = copy.deepcopy(query)
+        b = query
         if a.total_coverage() == 0 and len(a) > 0:
             print(" ** Warning: \t"+ a.name+" has zero length.")
             return a.name
@@ -1381,7 +1382,8 @@ class GenomicRegionSet:
                 upto += w
             assert False, "Shouldn't get here"
         ############################################
-        input_map = copy.deepcopy(self)
+        #input_map = copy.deepcopy(self)
+        input_map = self
         input_num = len(self)
         input_list = [len(x) for x in self.sequences]
         result_list = []
@@ -1733,7 +1735,8 @@ class GenomicRegionSet:
         if len(self) == 0 or len(regions) == 0: return
         
         else:
-            res = copy.deepcopy(regions)
+            #res = copy.deepcopy(regions)
+            res = regions
             # If there is overlap within self or y, they should be merged first. 
             if not self.sorted: self.sort()
             if not res.sorted: res.sort()
