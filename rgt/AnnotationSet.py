@@ -434,13 +434,9 @@ class AnnotationSet:
             - result_list -- A <return_type> containing the requested <list_type> subsetted according to <query>.
         """
 
-        # Fetching local copies of the lists
-        gene_list = deepcopy(self.gene_list)
-        tf_list = deepcopy(self.tf_list)
-
         # Deciding which list to be subsetted/returned
-        if(list_type == self.DataType.GENE_LIST): current_list = gene_list
-        elif(list_type == self.DataType.TF_LIST): current_list = tf_list
+        if(list_type == self.DataType.GENE_LIST): current_list = deepcopy(self.gene_list)
+        elif(list_type == self.DataType.TF_LIST): current_list = deepcopy(self.tf_list)
 
         # Subsetting
         if(isinstance(query,dict)):
