@@ -22,6 +22,7 @@ print("Overlapping? ", overlapping)
 
 
 '''
+http://johnstowers.co.nz/2011/07/15/interfacing-python-c-opencv-via-ctypes/
 FROM EXAMPLE CODE:
 
 func = lib.test_get_data_nulls
