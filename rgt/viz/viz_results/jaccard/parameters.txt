@@ -1,4 +1,4 @@
-Time: 2016-06-05 16:11:21
+Time: 2016-06-05 18:59:00
 User: laneskij
 
 Command:
@@ -6,6 +6,6 @@ Command:
 
 Jaccard Test
 Reference	Query	Repeats	True_Jaccard_index	p-value	Time
-cDC_H3K4me3_peaks	cDC_PU1_peaks	x10	0.0098	0	0:03:49
+cDC_H3K4me3_peaks	cDC_PU1_peaks	x10	0.0098	0	0:01:38
 
-Total running time is : 0:03:50
+Total running time is : 0:01:38

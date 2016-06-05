@@ -380,7 +380,9 @@ class RNADNABindingSet:
         # A dict: RBS as key, and GenomicRegionSet as its value
         self.merged_dict = OrderedDict()
         reg = copy.deepcopy(region_set)
+        #reg = region_set
         res = copy.deepcopy(name_replace)
+        #res = name_replace
 
         if not rbss:
             # Merge RBS

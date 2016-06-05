@@ -1,1 +1,3 @@
 01 : The first snapshot before any changes
+02 : seed(42) with all the deep copies
+03 : seed(42) eliminated 4 deep copies

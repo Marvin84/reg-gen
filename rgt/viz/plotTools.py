@@ -253,8 +253,10 @@ def group_refque(rEM,  qEM, groupby, rRegion=None, qRegion=None):
     return groupedreference, groupedquery
 
 def count_intersect(reference, query, mode_count="count", threshold=False):
-    bed1 = copy.deepcopy(reference)
-    bed2 = copy.deepcopy(query)
+    #bed1 = copy.deepcopy(reference)
+    bed1 = reference
+    #bed2 = copy.deepcopy(query)
+    bed2 = query
     if mode_count=="count":
         if threshold:
             if bed1.total_coverage() == 0:

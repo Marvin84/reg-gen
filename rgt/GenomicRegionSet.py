@@ -615,7 +615,8 @@ class GenomicRegionSet:
         else:
             # If there is overlap within self or y, they should be merged first.
             a = copy.deepcopy(self)
-            b = copy.deepcopy(y)
+            #b = copy.deepcopy(y)
+            b = y
             if not a.sorted: a.sort()
             if not b.sorted: b.sort()
             if mode == OverlapType.OVERLAP:
@@ -743,7 +744,8 @@ class GenomicRegionSet:
 
         else:
             a = deepcopy(self)
-            b = deepcopy(regionset)
+            #b = deepcopy(regionset)
+            b = regionset
             a.merge()
             b.merge()
             if mode_count=="count":
@@ -1247,7 +1249,7 @@ class GenomicRegionSet:
             similarity: (5+4+2)/[(8+10+4)+(10+10)-(5+4+2)] = 11/31
         """
         a = copy.deepcopy(self)
-        # b = copy.deepcopy(query)
+        #b = copy.deepcopy(query)
         b = query
         if a.total_coverage() == 0 and len(a) > 0:
             print(" ** Warning: \t"+ a.name+" has zero length.")
