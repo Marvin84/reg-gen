@@ -1,0 +1,4 @@
+File query urls:
+ - BLUEPRINT Epigenome: "ftp://ftp.ebi.ac.uk/pub/databases/" + json['extra_metadata']['FILE']
+ - Roadmap Epigenomics: full url given in json['extra_metadata']['url']
+ - ENCODE: full url given in json['extra_metadata']['original_file_url']
