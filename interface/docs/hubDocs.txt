@@ -1,0 +1,10 @@
+Hub List: http://genome-euro.ucsc.edu/cgi-bin/hgHubConnect
+
+Basic hub hierarchy definition: https://genome.ucsc.edu/goldenPath/help/hubQuickStart.html
+
+Example for Hub definition: http://vizhub.wustl.edu/VizHub/RoadmapReleaseAll.txt
+	- in Hub definition: "genomesFile" points to genomes
+	- example genomes file: http://vizhub.wustl.edu/VizHub/genomesall.txt
+		- genomes file contains genomes with pointers to "trackDb" files
+		- example trackDb file: http://vizhub.wustl.edu/VizHub/hg19/trackDb_dli_edacc9_3.txt
+			- trackDb format reference: https://genome.ucsc.edu/goldenpath/help/trackDb/trackDbDoc.html
