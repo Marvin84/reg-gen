@@ -1,0 +1,85 @@
+#!/bin/bash
+
+# This (hacky) scripts downloads and parses a list of public GenomeBrowser Hubs from http://genome-euro.ucsc.edu/cgi-bin/hgHubConnect
+# It creates a folder "results" and crawls all hub.txt, genomes.txt, and trackDb.txt files for each hub
+
+# WARNING: This is highly sensitive to changes in the HTML layout of the hub list page.
+
+
+fail () {
+	echo "ERROR: Download failed..."
+	echo $1 >> failedHubs
+	rm -R $2
+}
+
+downloadTrackDb () {
+	echo "Downloading trackDbURL:" $1/$2
+	wget $1/$2 -O $3/$4 -o /dev/null || return 1
+
+	for included in `grep -E "^include" $3/$4 | sed 's/^include //i'`;
+	do
+		downloadTrackDb $1 $included $3 $included || return 1
+	done
+}
+
+mkdir results
+cd results
+
+wget http://genome-euro.ucsc.edu/cgi-bin/hgHubConnect  -o /dev/null
+grep -F "document.connectHubForm.elements['hubUrl'].value" hgHubConnect | sed "s/^.*document.connectHubForm.elements\['hubUrl'\]\.value\w*= *'\([^']*\)'.*$/\1/" > hubList
+
+for hubUrl in `cat hubList`;
+do
+	echo "========================================="
+	echo "Downloading hub:" $hubUrl
+
+	baseURL=`echo $hubUrl | sed "s/\/[^\/]*$//"`
+	
+	# download hub
+	hubName="DUMMY"
+	if ! wget $hubUrl -O hub.txt -T5 -t2 -o /dev/null; then fail $hubUrl $hubName; continue; fi
+
+	# extract hub name and genome file name
+	hubName=`grep -E "^hub " hub.txt | sed 's/^hub //i;s/[^A-Za-z0-9-]/_/g'`
+	genomesFile=`grep -E "^genomesFile " hub.txt | sed 's/^genomesFile //i'`
+
+	echo "Hub name:" $hubName
+	
+	#echo $hubName
+	#echo $genomesFile
+	#echo `echo $hubUrl | sed "s/[^\/]*$/$genomesFile/"`
+	#echo ""
+	
+	mkdir $hubName
+	mv hub.txt $hubName/
+
+	# download genome file
+	echo "Downloading genomesFile:" $baseURL/$genomesFile
+	if ! wget $baseURL/$genomesFile -O $hubName/genomesFile.txt  -o /dev/null; then fail $hubUrl $hubName; continue; fi
+
+	# extract genomes
+	csplit -ks $hubName/genomesFile.txt -f $hubName/split '/^\s*$/' '{*}'
+	echo "Found `ls $hubName/split* | wc -l` genome(s)"
+	for gF in `ls $hubName/split*`;
+	do
+		genomeName=`grep -E "^genome " $gF | sed 's/^genome //i;s/[^A-Za-z0-9-]/_/g'`
+		if [ -z $genomeName ]; then
+			echo "Warning: Detected empty genome file $gF"
+			continue
+		fi
+		mkdir $hubName/$genomeName
+
+		# extract trackDb file name and path
+		trackDbFile=`grep -E "^trackDb " $gF | sed 's/^trackDb //i'`
+		trackDbFilePath=`echo "/$trackDbFile" | sed "s/^\(.*\)\/[^\/]*$/\1/"`
+		trackDbFileName=`echo $trackDbFile | sed "s/^.*\/\(.*\)$/\1/"`
+
+		# download trackDb file
+		if ! downloadTrackDb $baseURL$trackDbFilePath $trackDbFileName $hubName/$genomeName trackDb.txt; then
+			fail $hubUrl $hubName
+			break
+		fi
+	done
+
+	rm $hubName/split*
+done
