@@ -25,10 +25,14 @@ class Gui(QtGui.QWidget):
         db = connectDB()
 
         projectModel = QSqlQueryModel()
-        projectModel.setQuery("SELECT name, description, genome, epigenetic_mark, sample_id, technique, project, data_type, type, format FROM experiments",db)
+        projectModel.setQuery("SELECT name, description, genome, epigenetic_mark, sample_id, technique, project, data_type, type FROM experiments",db)
+        columns = projectModel.columnCount()
+        rows = projectModel.rowCount()
 
         projectView = self.ui.dataTable
         projectView.setModel(projectModel)
+        for i in range(1, columns-1):
+            projectView.resizeColumnToContents(i)
         projectView.show()
 
 
