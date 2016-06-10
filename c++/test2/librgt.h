@@ -31,7 +31,7 @@ void intersectGenomicRegionSetsOverlap (
     const int *initialsB,
     const int *finalsB,
     const int sizeB,
-    char*** chromsR,
+    inr** indicesR,
     int** initialsR,
     int** finalsR,
     int* sizeR
