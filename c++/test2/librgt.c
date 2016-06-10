@@ -35,7 +35,18 @@ bool overlap(
 
 /**
  *  Comparison of genomic regions:
- *  First compare the chromosome, then the initial position and finally the final position.
+ *  First compare the chromosome name lexicographically, then the initial position and finally the final position.
+ *  
+ *  @param const char *chromA The chromosome name of the first genomic region.
+ *  @param const int initialA The initial position of the first genomic region.
+ *  @param const int finalA   The final position of the first genomic region.
+ *  @param const char *chromB The chromosome name of the second genomic region.
+ *  @param const int initialB The initial position of the second genomic region.
+ *  @param const int finalB   The final position of the second genomic region.
+ *  
+ *  @return -1 iff the first genomic region is considered to be smaller than the second one.
+ *           0 iff the first genomic region is considered to be equal to the second one.
+ *           1 iff the first genomic region is considered to be greater than the second one.
  */
 int compareGenomicRegions(
     const char *chromA,
@@ -45,20 +56,41 @@ int compareGenomicRegions(
     const int initialB,
     const int finalB
 ) {
+    // First, compare chromosome names.
     const int chromComp = strcmp(chromA, chromB);
     if (chromComp != 0) {
+        // If the chrosome name differs, decide based on the chromosome name.
         return chromComp;
     } else {
+        // Otherwise, the regions are in the same genomic region.
+        // If the initial position of the first genomic region is smaller than the initial position of the second one, the first one is considered smaller.
+        // A: [-----
+        // B:     [----
         if (initialA < initialB) {
             return -1;
         } else if (initialA > initialB) {
+            // If the initial position of the first genomic region is greater than the initial position of the second one, the first one is considered greater.
+            // A:     [------
+            // B: [----
             return 1;
         } else {
+            // Otherwise, the initial position is equal:
+            // A: [-----
+            // B: [----
+            // Then, decide based on the final positions.
             if (finalA < finalB) {
+                // If the final position of the first region is smaller than the final position of the second one, the first one is considered smaller.
+                // A: [--//--]
+                // B: [--//----]
                 return -1;
             } else if (finalA > finalB) {
+                // If the final position of the first region is greater than the final position of the second one, the first one is considered greater.
+                // A: [--//-----]
+                // B: [--//--]
                 return 1;
             } else {
+                // Otherwise, the name of the genomic region, the initial position, and the final position are all equal.
+                // Then, the regions are considered equal, as well.
                 return 0;
             }
         }
