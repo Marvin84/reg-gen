@@ -94,7 +94,7 @@ void intersectGenomicRegionSetsOverlap (
     const int *initialsB,
     const int *finalsB,
     const int sizeB,
-    char*** chromsR,
+    int** indicesR,
     int** initialsR,
     int** finalsR,
     int* sizeR
@@ -110,20 +110,10 @@ void intersectGenomicRegionSetsOverlap (
     while (cont_loop) {
         //printf("i=%d\n", i);
         if (overlap(chromsA[i], initialsA[i], finalsA[i], chromsB[i], initialsB[j], finalsB[j])) {
-            (*chromsR)[k] = chromsA[i];
+            (*indicesR)[k] = i;
             (*initialsR)[k] = max(initialsA[i], initialsB[j]);
             (*finalsR)[k] = min(finalsA[i], finalsB[j]);
             k++;
-            /* TODO: add to result
-            z.add( GenomicRegion(chrom=s.chrom,
-                                              initial=max(s.initial, b[j].initial),
-                                              final=min(s.final, b[j].final),
-                                              name=s.name,
-                                              orientation=s.orientation,
-                                              data=s.data,
-                                              proximity=s.proximity) )
-            */
-            // printf("Overlapping regions: [%d,%d] and [%d, %d]\n", initialsA[i],finalsA[i],initialsB[j],finalsB[j]);
             printf("Added genomic region to result set: %s[%d, %d]\n\n", chromsA[i], max(initialsA[i], initialsB[j]), min(finalsA[i], finalsB[j]));
             if (!cont_overlap) {
                 pre_inter = j;

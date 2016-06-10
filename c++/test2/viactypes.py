@@ -52,16 +52,16 @@ initials2 = TwoInts(initialC, initialD)
 finals1 = TwoInts(finalA, finalB)
 finals2 = TwoInts(finalC, finalD)
 
-chromsR = cast((c_char_p*2)(), POINTER(c_char_p))
+indicesR = cast((c_int*2)(), POINTER(c_int))
 initialsR = cast((c_int*2)(), POINTER(c_int))
 finalsR = cast((c_int*2)(), POINTER(c_int))
 
 sizeR = c_int()
 
-func.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(StringArray), POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(c_int)]
+func.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(c_int)]
 func.restype = None
-a = func(chroms1, initials1, finals1, 2, chroms1, initials2, finals2, 2, byref(cast(chromsR, POINTER(c_char_p))), byref(cast(initialsR, POINTER(c_int))), byref(cast(finalsR, POINTER(c_int))), byref(sizeR))
-print([[initialsR[i], finalsR[i]] for i in range(sizeR.value)])
+a = func(chroms1, initials1, finals1, 2, chroms1, initials2, finals2, 2, byref(indicesR), byref(initialsR), byref(finalsR), byref(sizeR))
+print([[chroms1[indicesR[i]], initialsR[i], finalsR[i]] for i in range(sizeR.value)])
 
 
 '''
