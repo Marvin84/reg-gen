@@ -97,6 +97,9 @@ int compareGenomicRegions(
     }
 }
 
+/**
+ * Returns the minimum of two integer values.
+ */
 const int min(const int a, const int b) {
     if (a < b) {
         return a;
@@ -105,6 +108,9 @@ const int min(const int a, const int b) {
     }
 }
 
+/**
+ * Returns the maximum of two integer values.
+ */
 const int max(const int a, const int b) {
     if (a > b) {
         return a;
@@ -115,7 +121,24 @@ const int max(const int a, const int b) {
 
 
 /**
- * RegionSets have to be sorted
+ * Compute the intersection of two genomic region sets.
+ * The region sets have to be sorted and passed as three arrays: the chromsome names of the genomic regions, the initial positions of the genomic regions, and the final positions of the genomic regions.
+ * The number of genomic regions per set has to be passed as well.
+ *
+ * @param const char **chromsA An array of the chromosome names of the genomic regions of the first set.
+ * @param const int *initialsA An array of the initial positions of the genomic regions of the first set.
+ * @param comst int *finalsA   An array of the final positions of the genomic regions of the first set.
+ * @param const int sizeA      The number of genomic regions in the first set.
+ * @param const char **chromsB An array of the chromosome names of the genomic regions of the second set.
+ * @param const int *initialsB An array of the initial positions of the genomic regions of the second set.
+ * @param const int *finalsB   An array of the final positions of the genomic regions of the second set.
+ * @param const int sizeB      The number of genomic regions in the second set.
+ * @param int **indicesR       Used to return the result. An array for the indices of genomic regions of the first set, holding the meta data which should be attached to the corresponding genomic region of the result set.
+ * @param int **initialsR      Used to return the result. The initial positions of the genomic regions of the result set.
+ * @param int **finalsR        Used to return the result. The final positions of the genomic regions of the result set.
+ * @param int *sizaR           Used to return the result. The number of genomic regions in the result set.
+ *
+ * @return None
  */
 void intersectGenomicRegionSetsOverlap (
     const char **chromsA,
@@ -126,10 +149,10 @@ void intersectGenomicRegionSetsOverlap (
     const int *initialsB,
     const int *finalsB,
     const int sizeB,
-    int** indicesR,
-    int** initialsR,
-    int** finalsR,
-    int* sizeR
+    int **indicesR,
+    int **initialsR,
+    int **finalsR,
+    int *sizeR
 ) {
     int i = 0; // iter_a = iter(a); s = iter_a.next()
     int j = 0;
