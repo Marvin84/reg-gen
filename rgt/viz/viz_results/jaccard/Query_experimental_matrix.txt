@@ -1,0 +1,5 @@
+name    type    file    factor  cell    
+#MPP_PU1_peaks   regions /home/laneskij/practices/3_rgt_viz//data/MPP_PU1_peaks.bed    PU1 MPP
+CDP_PU1_peaks   regions /home/laneskij/practices/3_rgt_viz//data/CDP_PU1_peaks.bed    PU1 CDP
+cDC_PU1_peaks   regions /home/laneskij/practices/3_rgt_viz//data/cDC_PU1_peaks.bed    PU1 cDC
+#pDC_PU1_peaks   regions /home/laneskij/practices/3_rgt_viz//data/pDC_PU1_peaks.bed    PU1 pDC
