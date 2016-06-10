@@ -1,0 +1,10 @@
+Qt Designer erstellt eine .ui Datei,
+zum Umwandeln der .ui Datei zur .py Datei braucht man pyuic4 (ist normalerweise schon in PyQt enthalten).
+
+
+Danach einfach ins Terminal eingeben:
+
+pyuic4 [name].ui -o [name].py
+
+Also zum Beispiel:
+pyuic4 design.ui -o design.py

@@ -33,6 +33,7 @@ class Gui(QtGui.QWidget):
         projectView.setModel(projectModel)
         for i in range(1, columns-1):
             projectView.resizeColumnToContents(i)
+
         projectView.show()
 
 

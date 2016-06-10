@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'table.ui'
+# Form implementation generated from reading ui file 'design.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -31,9 +31,10 @@ class Ui_Form(object):
         self.buttonDownload.setObjectName(_fromUtf8("buttonDownload"))
         self.dataTable = QtGui.QTableView(Form)
         self.dataTable.setGeometry(QtCore.QRect(90, 120, 611, 192))
+        self.dataTable.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
         self.dataTable.setSortingEnabled(True)
         self.dataTable.setObjectName(_fromUtf8("dataTable"))
-        self.dataTable.verticalHeader().setVisible(False)
+        self.dataTable.verticalHeader().setVisible(True)
         self.dataTable.verticalHeader().setHighlightSections(False)
 
         self.retranslateUi(Form)
@@ -43,13 +44,3 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.buttonDownload.setText(_translate("Form", "Download", None))
 
-"""
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    Form = QtGui.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form)
-    Form.show()
-    sys.exit(app.exec_())
-"""
