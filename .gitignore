@@ -4,6 +4,7 @@
 # Compiled files
 *.pyc
 *.so
+*.o
 # Build directories
 build
 dist
