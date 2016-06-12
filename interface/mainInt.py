@@ -3,6 +3,12 @@ from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
 from design import Ui_Form
 
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
 def connectDB():
    db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
    db.setDatabaseName('deepBlue.db')
@@ -33,8 +39,11 @@ class Gui(QtGui.QWidget):
         projectView.setModel(projectModel)
         for i in range(1, columns-1):
             projectView.resizeColumnToContents(i)
-
         projectView.show()
+
+        QtCore.QObject.connect(self.ui.buttonDownload, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
+        QtCore.QObject.connect(self.ui.lineEdit, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
+        QtCore.QObject.connect(self.ui.comboBox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), self.ui.dataTable.update)
 
 
 if __name__ == "__main__":
