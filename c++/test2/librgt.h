@@ -20,4 +20,19 @@ void intersectGenomicRegionSetsOverlap (
     int* sizeR
 )
 
+void intersectGenomicRegionSetsOriginal (
+    const char **chromsA,
+    const int *initialsA,
+    const int *finalsA,
+    const int sizeA,
+    const char **chromsB,
+    const int *initialsB,
+    const int *finalsB,
+    const int sizeB,
+    int **indicesR,
+    int **initialsR,
+    int **finalsR,
+    int *sizeR
+);
+
 #endif // _LIBRGT_H_
