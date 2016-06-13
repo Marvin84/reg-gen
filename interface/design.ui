@@ -13,7 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-<<<<<<< HEAD
   <widget class="QPushButton" name="buttonDownload">
    <property name="geometry">
     <rect>
@@ -72,36 +71,6 @@
     </rect>
    </property>
   </widget>
-=======
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QTableView" name="dataTable">
-     <property name="locale">
-      <locale language="English" country="UnitedStates"/>
-     </property>
-     <property name="horizontalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <attribute name="verticalHeaderVisible">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="verticalHeaderHighlightSections">
-      <bool>false</bool>
-     </attribute>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="buttonDownload">
-     <property name="text">
-      <string>Download</string>
-     </property>
-    </widget>
-   </item>
-  </layout>
->>>>>>> a39d7276a4ed0c69d90cbe9764eb000764b94401
  </widget>
  <resources/>
  <connections/>
