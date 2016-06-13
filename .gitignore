@@ -1,5 +1,10 @@
+# IDE configuration files
 .idea
-*.pyc
 *.iml
+# Compiled files
+*.pyc
+*.so
+*.o
+# Build directories
 build
 dist

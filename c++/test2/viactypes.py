@@ -1,6 +1,8 @@
 from __future__ import print_function
 import os.path
 from ctypes import *
+from rgt.GenomicRegionSet import GenomicRegionSet
+from rgt.GenomicRegion import GenomicRegion
 
 me = os.path.abspath(os.path.dirname(__file__))
 lib = cdll.LoadLibrary(os.path.join(me, "librgt.so"))
@@ -39,6 +41,9 @@ print("Compare = ", compare)
 
 # Intersect genomic regions using the overlap mode.
 func = lib.intersectGenomicRegionSetsOverlap
+func.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(c_int)]
+func.restype = None
+
 StringArray = POINTER(c_char_p)
 TwoStrings = c_char_p*2
 TwoInts = c_int*2
@@ -52,16 +57,59 @@ initials2 = TwoInts(initialC, initialD)
 finals1 = TwoInts(finalA, finalB)
 finals2 = TwoInts(finalC, finalD)
 
-chromsR = cast((c_char_p*2)(), POINTER(c_char_p))
+indicesR = cast((c_int*2)(), POINTER(c_int))
 initialsR = cast((c_int*2)(), POINTER(c_int))
 finalsR = cast((c_int*2)(), POINTER(c_int))
 
 sizeR = c_int()
 
-func.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(StringArray), POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(c_int)]
-func.restype = None
-a = func(chroms1, initials1, finals1, 2, chroms1, initials2, finals2, 2, byref(cast(chromsR, POINTER(c_char_p))), byref(cast(initialsR, POINTER(c_int))), byref(cast(finalsR, POINTER(c_int))), byref(sizeR))
-print([[initialsR[i], finalsR[i]] for i in range(sizeR.value)])
+a = func(chroms1, initials1, finals1, 2, chroms1, initials2, finals2, 2, byref(indicesR), byref(initialsR), byref(finalsR), byref(sizeR))
+print([[chroms1[indicesR[i]], initialsR[i], finalsR[i]] for i in range(sizeR.value)])
+
+
+
+# Compute jaccard index
+jaccardC = lib.jaccard
+jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int]
+jaccardC.restype = c_double
+
+def jaccardIndex(gnrsA, gnrsB):
+    # Convert to ctypes
+    chroms = [gr.chrom for gr in gnrsA.sequences]
+    chromsA = (c_char_p * len(chroms))(*chroms)
+
+    chroms = [gr.chrom for gr in gnrsB.sequences]
+    chromsB = (c_char_p * len(chroms))(*chroms)
+
+    ints = [gr.initial for gr in gnrsA.sequences]
+    initialsA = (c_int * len(ints))(*ints)
+
+    ints = [gr.initial for gr in gnrsB.sequences]
+    initialsB = (c_int * len(ints))(*ints)
+
+    ints = [gr.final for gr in gnrsA.sequences]
+    finalsA = (c_int * len(ints))(*ints)
+
+    ints = [gr.final for gr in gnrsB.sequences]
+    finalsB = (c_int * len(ints))(*ints)
+
+    # Call C-function
+    return jaccardC(chromsA, initialsA, finalsA, len(gnrsA), chromsB, initialsB, finalsB, len(gnrsB))
+
+set1 = GenomicRegionSet("A")
+set1.add(GenomicRegion("chr1", 0, 10))
+set1.add(GenomicRegion("chr1", 15, 20))
+set1.add(GenomicRegion("chr1", 30, 45))
+print(set1.sequences)
+set2 = GenomicRegionSet("B")
+set2.add(GenomicRegion("chr1", 0, 5))
+set2.add(GenomicRegion("chr1", 10, 25))
+set2.add(GenomicRegion("chr1", 35, 45))
+print(set2.sequences)
+
+jaccard2 = jaccardIndex(set1, set2)
+print("jaccard2", jaccard2)
+
 
 
 '''
