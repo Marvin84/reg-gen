@@ -625,8 +625,8 @@ class GenomicRegionSet:
         else:
             # If there is overlap within self or y, they should be merged first.
             a = copy.deepcopy(self)
-            #b = copy.deepcopy(y)
-            b = y
+            b = copy.deepcopy(y)
+            #b = y
             if not a.sorted: a.sort()
             if not b.sorted: b.sort()
             if mode == OverlapType.OVERLAP:
@@ -754,8 +754,8 @@ class GenomicRegionSet:
 
         else:
             a = deepcopy(self)
-            #b = deepcopy(regionset)
-            b = regionset
+            b = deepcopy(regionset)
+            #b = regionset
             a.merge()
             b.merge()
             if mode_count=="count":
@@ -1242,8 +1242,9 @@ class GenomicRegionSet:
 
     def jaccardPython(self,query):
         a = copy.deepcopy(self)
-        # b = copy.deepcopy(query)
-        b = query
+        b = copy.deepcopy(query)
+        #b = query
+
         if a.total_coverage() == 0 and len(a) > 0:
             print(" ** Warning: \t"+ a.name+" has zero length.")
             return a.name
@@ -1424,8 +1425,8 @@ class GenomicRegionSet:
                 upto += w
             assert False, "Shouldn't get here"
         ############################################
-        #input_map = copy.deepcopy(self)
-        input_map = self
+        input_map = copy.deepcopy(self)
+        #input_map = self
         input_num = len(self)
         input_list = [len(x) for x in self.sequences]
         result_list = []
@@ -1692,8 +1693,8 @@ class GenomicRegionSet:
         if len(self) == 0: return None
         if len(regionset) == 0: return [0]*len(self)
 
-        #a = copy.deepcopy(con_self)
-        #b = copy.deepcopy(regionset)
+        a = copy.deepcopy(self)
+        b = copy.deepcopy(regionset)
         if not self.sorted: self.sort()
         if not regionset.sorted: regionset.sort()
         counts = []
@@ -1777,8 +1778,8 @@ class GenomicRegionSet:
         if len(self) == 0 or len(regions) == 0: return
         
         else:
-            #res = copy.deepcopy(regions)
-            res = regions
+            res = copy.deepcopy(regions)
+            #res = regions
             # If there is overlap within self or y, they should be merged first. 
             if not self.sorted: self.sort()
             if not res.sorted: res.sort()
