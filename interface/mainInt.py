@@ -2,6 +2,7 @@ import sys
 from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
 from design import Ui_Form
+import dbLayer
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -27,11 +28,14 @@ class Gui(QtGui.QWidget):
         super(Gui, self).__init__(parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        ui = self.ui
+
 
         db = connectDB()
 
+        # bind data query to table
         projectModel = QSqlQueryModel()
-        projectModel.setQuery("SELECT name, description, genome, epigenetic_mark, sample_id, technique, project, data_type, type FROM experiments",db)
+        projectModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
         columns = projectModel.columnCount()
         rows = projectModel.rowCount()
 
@@ -41,9 +45,33 @@ class Gui(QtGui.QWidget):
             projectView.resizeColumnToContents(i)
         projectView.show()
 
+
+        # on any change of the filter inputs, just update the data sql model
+        # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
+        def onFilterInputChange(content):
+          projectModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
+
+
+        # bind sql query for genome selector
+        genomeModel = QSqlQueryModel()
+        genomeModel.setQuery(dbLayer.getGenomeSql(),db)
+        self.ui.comboBoxGenome.setModel(genomeModel)
+
         QtCore.QObject.connect(self.ui.buttonDownload, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
         QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
-        QtCore.QObject.connect(self.ui.comboBoxGenome, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), self.ui.dataTable.update)
+
+        # bind genome selector
+        QtCore.QObject.connect(self.ui.comboBoxGenome, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), onFilterInputChange)
+
+        # bind filter input change handler to all inputs
+        QtCore.QObject.connect(self.ui.lineEditName, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+        QtCore.QObject.connect(self.ui.lineEditDescription, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+        QtCore.QObject.connect(self.ui.lineEditEpigenetic, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+        QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+        QtCore.QObject.connect(self.ui.lineEditBiosource, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+        QtCore.QObject.connect(self.ui.lineEditDataType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+        QtCore.QObject.connect(self.ui.lineEditProject, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+        QtCore.QObject.connect(self.ui.lineEditType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
 
 
 if __name__ == "__main__":
