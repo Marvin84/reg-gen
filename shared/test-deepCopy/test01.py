@@ -57,35 +57,48 @@ sbed1 = bed1.subtract(bed2)
 inter2 = sbed1.intersect(bed2)
 len(inter2)
 
-
+"""
 
 #----extend test
+print "---->Extend test<----"
 
 copy1 = deepcopy(bed1)
 copy2 = deepcopy(bed1)
-z = GenomicRegionSet(name=copy1.name)
+z1 = GenomicRegionSet(name=copy1.name)
+z2 = GenomicRegionSet(name=copy1.name)
+z3 = GenomicRegionSet(name=copy1.name)
+z4 = GenomicRegionSet(name=copy1.name)
 
+
+#using default version
 for s in copy1.sequences[0:3]:
-  print s
+  z3.add(deepcopy(s))
   s.extend(left=100, right=100)
-  print "s changed"
-  print s
-  print "-----------"
-  counter += 1
+  z4.add(s)
 
-counter = 0
+#using with flag set True
 for s in copy2.sequences[0:3]:
-  print s
-  z.add(s.extend(left=100, right=100, w_return=True))
-  print "s unchanged"
-  print s
-  counter += 1
-  print "-----------"
+  z1.add(s)
 
-print "this is z: " + str(z.sequences)
+z2 = z1.extend(left=100, right=100, w_return=True)
+
+
+print "Original Object: "
+print z3.sequences
+print "-----------"
+print "New object returned by extend with flag set True: "
+print z2.sequences
+print "-----------"
+print "Object unchanged after flag set True: "
+print z1.sequences
+print "-----------"
+print "Object changed after flag set Default:"
+print z4.sequences
+print "-----------------------------------------"
 
 
 #----combine test
+print "--->Combine test<---"
 
 x = GenomicRegionSet(name="test1")
 y = GenomicRegionSet(name="test2")
@@ -93,15 +106,25 @@ for s in bed1.sequences[0:3]:
  x.add(s)
 for s in bed1.sequences[3:6]:
  y.add(s)
+
+print "original data:"
 print x.sequences
+print "sequence that will be combined with original"
 print y.sequences
+print "-----------"
+
+#call with flag set True
 t = x.combine(y, change_name=True, output=True)
+
+print "The object returned by combine with Flag set True"
+print t.sequences
 print "x unchanged"
 print x.sequences
-print "new sequence:"
-print t.sequences
+print "-----------"
+
+#defualt call
 x.combine(y, change_name=True)
-print "x changed"
+print "x changed with default call:"
 print x.sequences
 
 """
@@ -112,3 +135,4 @@ for s in bed1.sequences[0:3]:
  print s
  s.extend(0,1)
  print s
+"""
