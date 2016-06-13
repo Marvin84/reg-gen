@@ -1242,13 +1242,9 @@ class GenomicRegionSet:
 
     def jaccardPython(self,query):
         a = copy.deepcopy(self)
-<<<<<<< HEAD
         b = copy.deepcopy(query)
         #b = query
-=======
-        # b = copy.deepcopy(query)
-        b = query
->>>>>>> 409b0fb8499df3c774ac6d9e248286cf0f03dc43
+
         if a.total_coverage() == 0 and len(a) > 0:
             print(" ** Warning: \t"+ a.name+" has zero length.")
             return a.name
