@@ -37,13 +37,27 @@ class Gui(QtGui.QWidget):
         projectModel = QSqlQueryModel()
         projectModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
         columns = projectModel.columnCount()
-        rows = projectModel.rowCount()
 
         projectView = self.ui.dataTable
         projectView.setModel(projectModel)
         for i in range(1, columns-1):
             projectView.resizeColumnToContents(i)
+
+        projectView.setColumnHidden(0,True) # hide experiment id
         projectView.show()
+        self.dataTableSelectionModel = projectView.selectionModel()
+
+
+        # bind sql query for genome selector
+        genomeModel = QSqlQueryModel()
+        genomeModel.setQuery(dbLayer.getGenomeSql(),db)
+        self.ui.comboBoxGenome.setModel(genomeModel)
+
+
+        # bind sql model for extra data selector
+        extraDataModel = QSqlQueryModel()
+        extraDataModel.setQuery(dbLayer.getAdditionalDataSql('e54478'),db)
+        self.ui.tableViewMeta.setModel(extraDataModel)
 
 
         # on any change of the filter inputs, just update the data sql model
@@ -51,11 +65,15 @@ class Gui(QtGui.QWidget):
         def onFilterInputChange(content):
           projectModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
 
+        def onExperimentSelect(selected, deselected):
+          indexes = self.dataTableSelectionModel.selectedRows()
+          if len(indexes) == 1:
+            record = projectModel.record(indexes[0].row())
+            experiment_id = record.value("experiment_id").toString()
+            extraDataModel.setQuery(dbLayer.getAdditionalDataSql(experiment_id),db)
+          else:
+            extraDataModel.clear()
 
-        # bind sql query for genome selector
-        genomeModel = QSqlQueryModel()
-        genomeModel.setQuery(dbLayer.getGenomeSql(),db)
-        self.ui.comboBoxGenome.setModel(genomeModel)
 
         QtCore.QObject.connect(self.ui.buttonDownload, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
         QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
@@ -72,6 +90,9 @@ class Gui(QtGui.QWidget):
         QtCore.QObject.connect(self.ui.lineEditDataType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
         QtCore.QObject.connect(self.ui.lineEditProject, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
         QtCore.QObject.connect(self.ui.lineEditType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+
+        # bind experiment selection
+        self.dataTableSelectionModel.selectionChanged.connect(onExperimentSelect)
 
 
 if __name__ == "__main__":
