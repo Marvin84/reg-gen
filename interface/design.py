@@ -71,4 +71,12 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
         self.buttonDownload.setText(_translate("Form", "Download", None))
+        self.lineEditName.setPlaceholderText(_translate("Form", "Name", None))
+        self.lineEditDescription.setPlaceholderText(_translate("Form", "Description", None))
+        self.lineEditEpigenetic.setPlaceholderText(_translate("Form", "Epigen. Mark", None))
+        self.lineEditTechnique.setPlaceholderText(_translate("Form", "Technique", None))
+        self.lineEditBiosource.setPlaceholderText(_translate("Form", "Biosource", None))
+        self.lineEditDataType.setPlaceholderText(_translate("Form", "Data Type", None))
+        self.lineEditProject.setPlaceholderText(_translate("Form", "Project", None))
+        self.lineEditType.setPlaceholderText(_translate("Form", "Type", None))
 

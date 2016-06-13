@@ -60,6 +60,9 @@
      <height>27</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>Name</string>
+   </property>
   </widget>
   <widget class="QComboBox" name="comboBoxGenome">
    <property name="geometry">
@@ -80,6 +83,9 @@
      <height>27</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>Description</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineEditEpigenetic">
    <property name="geometry">
@@ -89,6 +95,9 @@
      <width>111</width>
      <height>27</height>
     </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Epigen. Mark</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEditTechnique">
@@ -100,6 +109,9 @@
      <height>27</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>Technique</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineEditBiosource">
    <property name="geometry">
@@ -109,6 +121,9 @@
      <width>111</width>
      <height>27</height>
     </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Biosource</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEditDataType">
@@ -120,6 +135,9 @@
      <height>27</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>Data Type</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineEditProject">
    <property name="geometry">
@@ -130,6 +148,9 @@
      <height>27</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>Project</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineEditType">
    <property name="geometry">
@@ -139,6 +160,9 @@
      <width>111</width>
      <height>27</height>
     </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Type</string>
    </property>
   </widget>
  </widget>
