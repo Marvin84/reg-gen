@@ -17,7 +17,7 @@ from copy import deepcopy
 from scipy import stats
 from collections import OrderedDict
 # Internal
-from GenomicRegion import *
+from rgt.GenomicRegion import *
 from rgt.Util import GenomeData, OverlapType, AuxiliaryFunctions
 from rgt.GeneSet import GeneSet
 
