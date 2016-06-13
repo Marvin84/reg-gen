@@ -58,6 +58,9 @@ if platform.startswith("darwin"):
 else:
     bin_dir = "linux"
 
+moduleC = Extension('librgt', sources=['c/librgt.c'])
+external_modules = [moduleC]
+
 tools_dictionary = {
 "core": (
     None,
@@ -370,7 +373,8 @@ setup(name = "RGT",
       package_data = package_data_dictionary,
       entry_points = current_entry_points,
       install_requires = current_install_requires,
-      scripts = external_scripts )
+      scripts = external_scripts,
+      ext_modules = external_modules)
 ###################################################################################################
 # Termination
 ###################################################################################################

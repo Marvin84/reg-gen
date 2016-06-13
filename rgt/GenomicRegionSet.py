@@ -1286,7 +1286,7 @@ class GenomicRegionSet:
         # Call C-function
         return ctypes_jaccardC(chromsSelf, initialsSelf, finalsSelf, len(self), chromsQuery, initialsQuery, finalsQuery, len(query))
 
-    def jaccard(self, query, use_c=False):
+    def jaccard(self, query, use_c=True):
         """Return jaccard index, a value of similarity of these two GenomicRegionSet.
 
         *Keyword arguments:*
