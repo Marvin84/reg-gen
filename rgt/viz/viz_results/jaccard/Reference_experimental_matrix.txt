@@ -1,5 +1,0 @@
-name    type    file    factor  cell    
-#MPP_H3K4me3_peaks   regions /home/laneskij/practices/3_rgt_viz/data/H3K4me3/MPP_WT_peaks.bed    H3K4me3 MPP
-#CDP_H3K4me3_peaks   regions /home/laneskij/practices/3_rgt_viz/data/H3K4me3/CDP_WT_peaks.bed    H3K4me3 CDP
-cDC_H3K4me3_peaks   regions /home/laneskij/practices/3_rgt_viz/data/H3K4me3/test.bed    H3K4me3 cDC
-#pDC_H3K4me3_peaks   regions /home/laneskij/practices/3_rgt_viz/data/H3K4me3/pDC_WT_peaks.bed    H3K4me3 pDC
