@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>775</width>
-    <height>455</height>
+    <width>1192</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,9 @@
   <widget class="QPushButton" name="buttonDownload">
    <property name="geometry">
     <rect>
-     <x>570</x>
-     <y>400</y>
-     <width>88</width>
+     <x>480</x>
+     <y>100</y>
+     <width>91</width>
      <height>27</height>
     </rect>
    </property>
@@ -31,7 +31,7 @@
     <rect>
      <x>40</x>
      <y>170</y>
-     <width>611</width>
+     <width>801</width>
      <height>192</height>
     </rect>
    </property>
@@ -197,6 +197,53 @@
    <property name="text">
     <string>Clear All</string>
    </property>
+  </widget>
+  <widget class="QTableView" name="tableViewMeta">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>170</y>
+     <width>291</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <property name="showGrid">
+    <bool>false</bool>
+   </property>
+   <attribute name="horizontalHeaderMinimumSectionSize">
+    <number>144</number>
+   </attribute>
+   <attribute name="verticalHeaderDefaultSectionSize">
+    <number>0</number>
+   </attribute>
+   <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QTableView" name="dataTableSelected">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>380</y>
+     <width>801</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <property name="horizontalScrollMode">
+    <enum>QAbstractItemView::ScrollPerPixel</enum>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+   <attribute name="verticalHeaderVisible">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderHighlightSections">
+    <bool>false</bool>
+   </attribute>
   </widget>
  </widget>
  <resources/>
