@@ -16,10 +16,20 @@ import random
 from copy import deepcopy
 from scipy import stats
 from collections import OrderedDict
+from ctypes import *
+import os
 # Internal
 from rgt.GenomicRegion import GenomicRegion
 from rgt.Util import GenomeData, OverlapType, AuxiliaryFunctions
 from rgt.GeneSet import GeneSet
+
+# C-Binding of jaccard function
+# TODO: Determine, where to put this
+me = os.path.abspath(os.path.dirname(__file__))
+lib = cdll.LoadLibrary(os.path.join(me, "..", "librgt.so"))
+ctypes_jaccardC = lib.jaccard
+ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int]
+ctypes_jaccardC.restype = c_double
 
 ###############################################################################
 # Class
@@ -1229,8 +1239,54 @@ class GenomicRegionSet:
                 z.add(s1)
                 z.add(s2)
             return z
+
+    def jaccardPython(self,query):
+        a = copy.deepcopy(self)
+        # b = copy.deepcopy(query)
+        b = query
+        if a.total_coverage() == 0 and len(a) > 0:
+            print(" ** Warning: \t"+ a.name+" has zero length.")
+            return a.name
+        if b.total_coverage() == 0 and len(b) > 0:
+            print(" ** Warning: \t"+ b.name+" has zero length.")
+            return b.name
+
+        intersects = a.intersect(b)
+        #print(intersects.total_coverage(),self.total_coverage(), query.total_coverage(),sep="\t")
+        intersects.merge()
+        inter = intersects.total_coverage()
+
+        a.combine(b, change_name=False)
+        a.merge()
+        uni = a.total_coverage()
+        #print(self.name+"   "+query.name+"   "+str(inter)+"   "+str(uni))
+        similarity = inter / uni
+        return similarity
+
+    def jaccardC(self, query):
+        # Convert to ctypes
+        chroms = [gr.chrom for gr in self.sequences]
+        chromsSelf = (c_char_p * len(chroms))(*chroms)
+
+        chroms = [gr.chrom for gr in query.sequences]
+        chromsQuery = (c_char_p * len(chroms))(*chroms)
+
+        ints = [gr.initial for gr in self.sequences]
+        initialsSelf = (c_int * len(ints))(*ints)
+
+        ints = [gr.initial for gr in query.sequences]
+        initialsQuery = (c_int * len(ints))(*ints)
+
+        ints = [gr.final for gr in self.sequences]
+        finalsSelf = (c_int * len(ints))(*ints)
+
+        ints = [gr.final for gr in query.sequences]
+        finalsQuery = (c_int * len(ints))(*ints)
+
+        # Call C-function
+        return ctypes_jaccardC(chromsSelf, initialsSelf, finalsSelf, len(self), chromsQuery, initialsQuery, finalsQuery, len(query))
     
-    def jaccard(self,query):
+    def jaccard(self, query, use_c=True):
         """Return jaccard index, a value of similarity of these two GenomicRegionSet.
         
         *Keyword arguments:*
@@ -1248,27 +1304,10 @@ class GenomicRegionSet:
             intersect         -5-             -4-    2
             similarity: (5+4+2)/[(8+10+4)+(10+10)-(5+4+2)] = 11/31
         """
-        a = copy.deepcopy(self)
-        # b = copy.deepcopy(query)
-        b = query
-        if a.total_coverage() == 0 and len(a) > 0:
-            print(" ** Warning: \t"+ a.name+" has zero length.")
-            return a.name
-        if b.total_coverage() == 0 and len(b) > 0:
-            print(" ** Warning: \t"+ b.name+" has zero length.")
-            return b.name
-            
-        intersects = a.intersect(b)
-        #print(intersects.total_coverage(),self.total_coverage(), query.total_coverage(),sep="\t")
-        intersects.merge()
-        inter = intersects.total_coverage()
-        
-        a.combine(b, change_name=False)
-        a.merge()
-        uni = a.total_coverage()
-        #print(self.name+"   "+query.name+"   "+str(inter)+"   "+str(uni))
-        similarity = inter / uni
-        return similarity
+        if use_c:
+            return self.jaccardC(query)
+        else:
+            return self.jaccardPython(query)
     
     def within_overlap(self):
         """Check whether there is overlapping within or not."""
