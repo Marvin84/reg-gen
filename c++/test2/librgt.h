@@ -35,4 +35,15 @@ void intersectGenomicRegionSetsOriginal (
     int *sizeR
 );
 
+double jaccard (
+    const char **chromsA,
+    const int *initialsA,
+    const int *finalsA,
+    const int sizeA,
+    const char **chromsB,
+    const int *initialsB,
+    const int *finalsB,
+    const int sizeB
+);
+
 #endif // _LIBRGT_H_
