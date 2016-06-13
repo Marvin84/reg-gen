@@ -73,6 +73,26 @@
      <height>27</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>Neues Element</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>bbbbbb</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>jjutr</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>sagege</string>
+    </property>
+   </item>
   </widget>
   <widget class="QLineEdit" name="lineEditDescription">
    <property name="geometry">
@@ -165,7 +185,149 @@
     <string>Type</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButtonClear">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>60</y>
+     <width>99</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Clear All</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditDataType</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>530</x>
+     <y>68</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>433</x>
+     <y>73</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditType</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>567</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>110</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditProject</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>544</x>
+     <y>74</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>427</x>
+     <y>43</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditEpigenetic</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>543</x>
+     <y>79</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>31</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditBiosource</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>524</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditTechnique</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>535</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>259</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditName</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>518</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>111</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditDescription</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>536</x>
+     <y>73</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>139</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
