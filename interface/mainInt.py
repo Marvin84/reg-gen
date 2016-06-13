@@ -42,8 +42,8 @@ class Gui(QtGui.QWidget):
         projectView.show()
 
         QtCore.QObject.connect(self.ui.buttonDownload, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
-        QtCore.QObject.connect(self.ui.lineEdit, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
-        QtCore.QObject.connect(self.ui.comboBox, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), self.ui.dataTable.update)
+        QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
+        QtCore.QObject.connect(self.ui.comboBoxGenome, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), self.ui.dataTable.update)
 
 
 if __name__ == "__main__":

@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="buttonDownload">
    <property name="geometry">
     <rect>
-     <x>620</x>
-     <y>350</y>
+     <x>570</x>
+     <y>400</y>
      <width>88</width>
      <height>27</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QTableView" name="dataTable">
    <property name="geometry">
     <rect>
-     <x>90</x>
-     <y>120</y>
+     <x>40</x>
+     <y>170</y>
      <width>611</width>
      <height>192</height>
     </rect>
@@ -51,22 +51,92 @@
     <bool>false</bool>
    </attribute>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="lineEditName">
    <property name="geometry">
     <rect>
-     <x>236</x>
-     <y>80</y>
-     <width>113</width>
+     <x>40</x>
+     <y>60</y>
+     <width>111</width>
      <height>27</height>
     </rect>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="comboBoxGenome">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>80</y>
-     <width>101</width>
+     <x>40</x>
+     <y>20</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditDescription">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>100</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditEpigenetic">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>20</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditTechnique">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>100</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditBiosource">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>60</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditDataType">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>60</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditProject">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>20</y>
+     <width>111</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditType">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>100</y>
+     <width>111</width>
      <height>27</height>
     </rect>
    </property>
