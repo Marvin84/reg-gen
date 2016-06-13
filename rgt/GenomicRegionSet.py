@@ -25,11 +25,11 @@ from rgt.GeneSet import GeneSet
 
 # C-Binding of jaccard function
 # TODO: Determine, where to put this
-me = os.path.abspath(os.path.dirname(__file__))
-lib = cdll.LoadLibrary(os.path.join(me, "..", "librgt.so"))
-ctypes_jaccardC = lib.jaccard
-ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int]
-ctypes_jaccardC.restype = c_double
+#me = os.path.abspath(os.path.dirname(__file__))
+#lib = cdll.LoadLibrary(os.path.join(me, "..", "librgt.so"))
+#ctypes_jaccardC = lib.jaccard
+#ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int]
+#ctypes_jaccardC.restype = c_double
 
 ###############################################################################
 # Class
@@ -1263,6 +1263,7 @@ class GenomicRegionSet:
         similarity = inter / uni
         return similarity
 
+    '''
     def jaccardC(self, query):
         # Convert to ctypes
         chroms = [gr.chrom for gr in self.sequences]
@@ -1285,8 +1286,8 @@ class GenomicRegionSet:
 
         # Call C-function
         return ctypes_jaccardC(chromsSelf, initialsSelf, finalsSelf, len(self), chromsQuery, initialsQuery, finalsQuery, len(query))
-    
-    def jaccard(self, query, use_c=True):
+    '''
+    def jaccard(self, query, use_c=False):
         """Return jaccard index, a value of similarity of these two GenomicRegionSet.
         
         *Keyword arguments:*
