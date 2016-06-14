@@ -23,6 +23,9 @@ def connectDB():
 
    return db
 
+def rowDoubleClicked(index):
+    QMessageBox.information(None,"Hello!","You Double Clicked: \n"+index.data().toString())
+
 class Gui(QtGui.QWidget):
     def __init__(self, parent = None):
         super(Gui, self).__init__(parent)
@@ -72,6 +75,9 @@ class Gui(QtGui.QWidget):
         QtCore.QObject.connect(self.ui.lineEditDataType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
         QtCore.QObject.connect(self.ui.lineEditProject, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
         QtCore.QObject.connect(self.ui.lineEditType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+
+        # add double clicked row in data table to selection table
+        QtCore.QObject.connect(self.ui.dataTable, QtCore.SIGNAL(_fromUtf8("doubleClicked(QModelIndex)")), rowDoubleClicked)
 
 
 if __name__ == "__main__":
