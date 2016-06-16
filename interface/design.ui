@@ -198,28 +198,6 @@
     <string>Clear All</string>
    </property>
   </widget>
-  <widget class="QTableView" name="tableViewMeta">
-   <property name="geometry">
-    <rect>
-     <x>860</x>
-     <y>170</y>
-     <width>291</width>
-     <height>341</height>
-    </rect>
-   </property>
-   <property name="showGrid">
-    <bool>false</bool>
-   </property>
-   <attribute name="horizontalHeaderMinimumSectionSize">
-    <number>144</number>
-   </attribute>
-   <attribute name="verticalHeaderDefaultSectionSize">
-    <number>0</number>
-   </attribute>
-   <attribute name="verticalHeaderShowSortIndicator" stdset="0">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <widget class="QTableView" name="dataTableSelected">
    <property name="geometry">
     <rect>
@@ -237,6 +215,34 @@
    </property>
    <property name="sortingEnabled">
     <bool>true</bool>
+   </property>
+   <attribute name="verticalHeaderVisible">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderHighlightSections">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QTableView" name="tableViewMeta">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>170</y>
+     <width>321</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <property name="autoScroll">
+    <bool>true</bool>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <property name="horizontalScrollMode">
+    <enum>QAbstractItemView::ScrollPerPixel</enum>
+   </property>
+   <property name="sortingEnabled">
+    <bool>false</bool>
    </property>
    <attribute name="verticalHeaderVisible">
     <bool>true</bool>

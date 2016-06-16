@@ -3,8 +3,9 @@ def getGenomeSql():
   return genomeSql
 
 
+experiment_fields = "experiment_id, name, description, genome, epigenetic_mark, technique, project, data_type, biosource_name"
 def getDataSql():
-  dataSql = """SELECT experiment_id, name, description, genome, epigenetic_mark, technique, project, data_type, biosource_name
+  dataSql = """SELECT """+experiment_fields+"""
         FROM experiments e 
         JOIN (SELECT sample_id,value AS biosource_name FROM sample_info WHERE key='biosource_name') bs ON (bs.sample_id = e.sample_id)"""
   return dataSql
@@ -43,5 +44,15 @@ def getAdditionalDataSql(experiment_id):
   UNION SELECT '' AS Property, '' AS Value
   UNION SELECT * FROM (SELECT key AS Property, value AS Value FROM sample_info s JOIN experiments e ON (e.sample_id = s.sample_id AND e.experiment_id = '"""+experiment_id+"""') ORDER BY Property ASC)
   """
-  print addDataSql
+  
   return addDataSql
+
+
+def getSelectedExpSql(selectedExperimentIds):
+  selectedExpSql = """SELECT """+experiment_fields+"""
+        FROM experiments e 
+        JOIN (SELECT sample_id,value AS biosource_name FROM sample_info WHERE key='biosource_name') bs ON (bs.sample_id = e.sample_id)
+        WHERE e.experiment_id IN ('"""+"','".join(selectedExperimentIds)+"""')
+  """
+  
+  return selectedExpSql
