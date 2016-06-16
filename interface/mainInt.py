@@ -36,24 +36,28 @@ class Gui(QtGui.QWidget):
     db = connectDB()
 
     # bind data query to table
-    projectModel = QSqlQueryModel()
-    projectModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
-    columns = projectModel.columnCount()
+    experimentsModel = QSqlQueryModel()
+    experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
+    columns = experimentsModel.columnCount()
 
-    projectView = self.ui.dataTable
-    projectView.setModel(projectModel)
+    experimentsView = self.ui.dataTable
+    experimentsView.setModel(experimentsModel)
     for i in range(1, columns-1):
-      projectView.resizeColumnToContents(i)
+      experimentsView.resizeColumnToContents(i)
 
-    projectView.setColumnHidden(0,True) # hide experiment id
-    projectView.show()
-    self.dataTableSelectionModel = projectView.selectionModel()
+    experimentsView.setColumnHidden(0,True) # hide experiment id
+    experimentsView.show()
+    self.dataTableSelectionModel = experimentsView.selectionModel()
 
 
-    # bind sql query for genome selector
+    # bind sql query for genome and project selectors
     genomeModel = QSqlQueryModel()
-    genomeModel.setQuery(dbLayer.getGenomeSql(),db)
+    genomeModel.setQuery(dbLayer.getGenomesSql(),db)
     self.ui.comboBoxGenome.setModel(genomeModel)
+
+    projectsModel = QSqlQueryModel()
+    projectsModel.setQuery(dbLayer.getProjectsSql(),db)
+    self.ui.comboBoxProject.setModel(projectsModel)
 
 
     # bind sql model for extra data selector
@@ -70,12 +74,12 @@ class Gui(QtGui.QWidget):
     # on any change of the filter inputs, just update the data sql model
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
     def onFilterInputChange(content):
-      projectModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
+      experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
 
     def onExperimentSelect(selected, deselected):
       indexes = self.dataTableSelectionModel.selectedRows()
       if len(indexes) == 1:
-        record = projectModel.record(indexes[0].row())
+        record = experimentsModel.record(indexes[0].row())
         experiment_id = record.value("experiment_id").toString()
         extraDataModel.setQuery(dbLayer.getAdditionalDataSql(experiment_id),db)
       else:
@@ -86,7 +90,7 @@ class Gui(QtGui.QWidget):
       print("You Double Clicked: "+index.data().toString())
       print("In row: \n"+str(index.row()))
 
-      record = projectModel.record(index.row())
+      record = experimentsModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
       selectedExperimentIds.append(str(experiment_id))
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
@@ -100,12 +104,17 @@ class Gui(QtGui.QWidget):
       selectedExperimentIds.remove(str(experiment_id))
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
 
+    def clearComboBoxes():
+      self.ui.comboBoxGenome.setCurrentIndex(0)
+      self.ui.comboBoxProject.setCurrentIndex(0)
+
 
     QtCore.QObject.connect(self.ui.buttonDownload, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
     QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
 
-    # bind genome selector
+    # bind selectors
     QtCore.QObject.connect(self.ui.comboBoxGenome, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), onFilterInputChange)
+    QtCore.QObject.connect(self.ui.comboBoxProject, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), onFilterInputChange)
 
     # bind filter input change handler to all inputs
     QtCore.QObject.connect(self.ui.lineEditName, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
@@ -114,8 +123,7 @@ class Gui(QtGui.QWidget):
     QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
     QtCore.QObject.connect(self.ui.lineEditBiosource, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
     QtCore.QObject.connect(self.ui.lineEditDataType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditProject, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditGeneralSearch, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
 
     # add double clicked row in data table to selection table
     QtCore.QObject.connect(self.ui.dataTable, QtCore.SIGNAL(_fromUtf8("doubleClicked(QModelIndex)")), expDoubleClicked)
@@ -123,6 +131,9 @@ class Gui(QtGui.QWidget):
 
     # bind experiment selection
     self.dataTableSelectionModel.selectionChanged.connect(onExperimentSelect)
+
+    # clear
+    QtCore.QObject.connect(self.ui.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), clearComboBoxes)
 
 
 if __name__ == "__main__":

@@ -13,19 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPushButton" name="buttonDownload">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>100</y>
-     <width>91</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Download</string>
-   </property>
-  </widget>
   <widget class="QTableView" name="dataTable">
    <property name="geometry">
     <rect>
@@ -55,7 +42,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>60</y>
+     <y>90</y>
      <width>111</width>
      <height>27</height>
     </rect>
@@ -64,41 +51,11 @@
     <string>Name</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBoxGenome">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>20</y>
-     <width>111</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>Neues Element</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>bbbbbb</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>jjutr</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>sagege</string>
-    </property>
-   </item>
-  </widget>
   <widget class="QLineEdit" name="lineEditDescription">
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>100</y>
+     <y>130</y>
      <width>111</width>
      <height>27</height>
     </rect>
@@ -110,8 +67,8 @@
   <widget class="QLineEdit" name="lineEditEpigenetic">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>20</y>
+     <x>340</x>
+     <y>130</y>
      <width>111</width>
      <height>27</height>
     </rect>
@@ -124,7 +81,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>100</y>
+     <y>130</y>
      <width>111</width>
      <height>27</height>
     </rect>
@@ -137,7 +94,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>60</y>
+     <y>90</y>
      <width>111</width>
      <height>27</height>
     </rect>
@@ -150,7 +107,7 @@
    <property name="geometry">
     <rect>
      <x>340</x>
-     <y>60</y>
+     <y>90</y>
      <width>111</width>
      <height>27</height>
     </rect>
@@ -159,43 +116,17 @@
     <string>Data Type</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEditProject">
+  <widget class="QLineEdit" name="lineEditGeneralSearch">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>20</y>
-     <width>111</width>
+     <x>40</x>
+     <y>50</y>
+     <width>411</width>
      <height>27</height>
     </rect>
    </property>
    <property name="placeholderText">
-    <string>Project</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEditType">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>100</y>
-     <width>111</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="placeholderText">
-    <string>Type</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButtonClear">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>60</y>
-     <width>99</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Clear All</string>
+    <string>General Search</string>
    </property>
   </widget>
   <widget class="QTableView" name="dataTableSelected">
@@ -251,6 +182,109 @@
     <bool>false</bool>
    </attribute>
   </widget>
+  <widget class="QSplitter" name="splitter">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>10</y>
+     <width>190</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="text">
+     <string>Genome:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxGenome">
+    <item>
+     <property name="text">
+      <string>Neues Element</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>bbbbbb</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>jjutr</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>sagege</string>
+     </property>
+    </item>
+   </widget>
+  </widget>
+  <widget class="QSplitter" name="splitter_2">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>10</y>
+     <width>182</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <widget class="QLabel" name="label_2">
+    <property name="text">
+     <string>Project:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxProject">
+    <item>
+     <property name="text">
+      <string>Neues Element</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>bbbbbb</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>jjutr</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>sagege</string>
+     </property>
+    </item>
+   </widget>
+  </widget>
+  <widget class="QSplitter" name="splitter_3">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>60</y>
+     <width>86</width>
+     <height>54</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+   <widget class="QPushButton" name="pushButtonClear">
+    <property name="text">
+     <string>Clear All</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonDownload">
+    <property name="text">
+     <string>Download</string>
+    </property>
+   </widget>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -266,39 +300,23 @@
     </hint>
     <hint type="destinationlabel">
      <x>433</x>
-     <y>73</y>
+     <y>103</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>pushButtonClear</sender>
    <signal>clicked()</signal>
-   <receiver>lineEditType</receiver>
+   <receiver>lineEditGeneralSearch</receiver>
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>567</x>
+     <x>555</x>
      <y>80</y>
     </hint>
     <hint type="destinationlabel">
-     <x>437</x>
-     <y>110</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditProject</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>544</x>
-     <y>74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>427</x>
-     <y>43</y>
+     <x>137</x>
+     <y>60</y>
     </hint>
    </hints>
   </connection>
@@ -313,8 +331,8 @@
      <y>79</y>
     </hint>
     <hint type="destinationlabel">
-     <x>274</x>
-     <y>31</y>
+     <x>424</x>
+     <y>141</y>
     </hint>
    </hints>
   </connection>
@@ -330,7 +348,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>261</x>
-     <y>78</y>
+     <y>108</y>
     </hint>
    </hints>
   </connection>
@@ -346,7 +364,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
-     <y>116</y>
+     <y>146</y>
     </hint>
    </hints>
   </connection>
@@ -362,7 +380,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>111</x>
-     <y>78</y>
+     <y>108</y>
     </hint>
    </hints>
   </connection>
@@ -378,7 +396,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>139</x>
-     <y>118</y>
+     <y>148</y>
     </hint>
    </hints>
   </connection>
