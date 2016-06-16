@@ -25,7 +25,7 @@ def connectDB():
 
 def rowDoubleClicked(index):
     print("You Double Clicked: "+index.data().toString())
-    print("In row: " \n+index.row().toString())
+    print("In row: \n"+str(index.row()))
 
 class Gui(QtGui.QWidget):
     def __init__(self, parent = None):
