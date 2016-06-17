@@ -42,7 +42,7 @@ class Gui(QtGui.QWidget):
 
     experimentsView = self.ui.dataTable
     experimentsView.setModel(experimentsModel)
-    for i in range(1, columns-1):
+    for i in range(2, columns):
       experimentsView.resizeColumnToContents(i)
 
     experimentsView.setColumnHidden(0,True) # hide experiment id
@@ -70,6 +70,11 @@ class Gui(QtGui.QWidget):
     selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
     self.ui.dataTableSelected.setModel(selectedExpModel)
 
+    # setup and load from experimental matrix textfile
+    # TODO: loading
+    expMatrix = open('expMatrix', 'a')
+    #expMatrix.write("Test test")
+    expMatrix.close()
 
     # on any change of the filter inputs, just update the data sql model
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
