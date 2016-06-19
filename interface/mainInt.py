@@ -79,10 +79,11 @@ class Gui(QtGui.QWidget):
       selectedExpView.setColumnWidth(i, columnWidth)
 
     # setup and load from experimental matrix textfile
-    # TODO: loading
-    expMatrix = open('expMatrix', 'a')
-    #expMatrix.write("Test test")
+    # TODO: loading or import function
+    expMatrix = open('expMatrix', 'r')
+    #load
     expMatrix.close()
+    exportModel = QSqlQueryModel()
 
     # on any change of the filter inputs, just update the data sql model
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
@@ -121,6 +122,36 @@ class Gui(QtGui.QWidget):
       self.ui.comboBoxGenome.setCurrentIndex(0)
       self.ui.comboBoxProject.setCurrentIndex(0)
 
+    def exportMatrix():
+      exportModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
+      exportRows = exportModel.rowCount()
+      exportColumns = exportModel.columnCount()
+
+      """
+      for row in range(0, exportRows):
+        for column in range(0, exportColumns):
+          entry = exportModel.data(exportModel.index(row, column)).toString()
+          print (entry),
+          if column != exportColumns-1:
+            print (" "),
+          sys.stdout.flush()
+        if row != exportRows-1:
+          print()
+      """
+
+      expMatrix = open('expMatrix', 'w')
+      
+      for row in range(0, exportRows):
+        for column in range(0, exportColumns):
+          entry = exportModel.data(exportModel.index(row, column)).toString()
+          expMatrix.write(entry),
+          if column != exportColumns-1:
+            expMatrix.write("  "),
+        if row != exportRows-1:
+          expMatrix.write("")
+
+      expMatrix.close()
+
 
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
     QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
@@ -147,6 +178,9 @@ class Gui(QtGui.QWidget):
 
     # clear
     QtCore.QObject.connect(self.ui.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), clearComboBoxes)
+
+    # export
+    QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), exportMatrix)
 
 
 if __name__ == "__main__":
