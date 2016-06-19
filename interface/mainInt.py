@@ -38,11 +38,11 @@ class Gui(QtGui.QWidget):
     # bind data query to table
     experimentsModel = QSqlQueryModel()
     experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
-    columns = experimentsModel.columnCount()
+    dataColumns = experimentsModel.columnCount()
 
     experimentsView = self.ui.dataTable
     experimentsView.setModel(experimentsModel)
-    for i in range(2, columns):
+    for i in range(2, dataColumns):
       experimentsView.resizeColumnToContents(i)
 
     experimentsView.setColumnHidden(0,True) # hide experiment id
@@ -68,7 +68,15 @@ class Gui(QtGui.QWidget):
     # bind sql model for selected experiments
     selectedExpModel = QSqlQueryModel()
     selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
-    self.ui.dataTableSelected.setModel(selectedExpModel)
+    selectionColumns = selectedExpModel.columnCount()
+
+    selectedExpView = self.ui.dataTableSelected
+    selectedExpView.setModel(selectedExpModel)
+    selectedExpView.setColumnHidden(0,True)
+
+    for i in range(2, selectionColumns):
+      columnWidth = experimentsView.columnWidth(i)
+      selectedExpView.setColumnWidth(i, columnWidth)
 
     # setup and load from experimental matrix textfile
     # TODO: loading
@@ -92,8 +100,8 @@ class Gui(QtGui.QWidget):
         # TODO: table does not clear itself?
 
     def expDoubleClicked(index):
-      print("You Double Clicked: "+index.data().toString())
-      print("In row: \n"+str(index.row()))
+      #print("You Double Clicked: "+index.data().toString())
+      #print("In row: \n"+str(index.row()))
 
       record = experimentsModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
@@ -114,7 +122,7 @@ class Gui(QtGui.QWidget):
       self.ui.comboBoxProject.setCurrentIndex(0)
 
 
-    QtCore.QObject.connect(self.ui.buttonDownload, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
+    QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
     QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
 
     # bind selectors
