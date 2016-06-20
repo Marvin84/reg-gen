@@ -444,7 +444,7 @@ int totalCoverageIntersectGenomicRegionSetsOverlap (
     // Loop
     while (cont_loop) {
         // If the current genomic regions of the first and second set overlap.
-        if (overlap(chromsA[i], initialsA[i], finalsA[i], chromsB[i], initialsB[j], finalsB[j])) {
+        if (overlap(chromsA[i], initialsA[i], finalsA[i], chromsB[j], initialsB[j], finalsB[j])) {
             // Compute coverage of the resulting genomic region.
             const int initial = max(initialsA[i], initialsB[j]);
             const int final = min(finalsA[i], finalsB[j]);
@@ -478,7 +478,7 @@ int totalCoverageIntersectGenomicRegionSetsOverlap (
             // There is an interrupt of overlap continuation
             cont_overlap = false;
             // Compare the two current regions.
-            const int comparison = compareGenomicRegions(chromsA[i], initialsA[i], finalsA[i], chromsB[i], initialsB[j],
+            const int comparison = compareGenomicRegions(chromsA[i], initialsA[i], finalsA[i], chromsB[j], initialsB[j],
                 finalsB[j]);
             // If the region of the first set is smaller than the one from the second one.
             if (comparison < 0) {
@@ -547,9 +547,11 @@ double jaccard (
     const int sizeB
 ) {
     // Compute coverage of the intersection
+    // printf("Compute coverage of the intersection.\n");
     const int inter = totalCoverageIntersectGenomicRegionSetsOverlap(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB);
 
     // Compute total coverage of A
+    // printf("Compute total coverage of A.\n");
     int totalCoverageA = 0;
     for (int i = 0; i < sizeA; i++) {
         const int coverage = (finalsA[i] - initialsA[i]);
@@ -557,6 +559,7 @@ double jaccard (
     }
 
     // Compute total coverage of B
+    // printf("Compute total coverage of B.\n");
     int totalCoverageB = 0;
     for (int i = 0; i < sizeB; i++) {
         const int coverage = (finalsB[i] - initialsB[i]);
@@ -567,5 +570,6 @@ double jaccard (
     const int uni = totalCoverageA + totalCoverageB - inter;
 
     // Return jaccard index.
+    // printf("Return jaccard index.\n");
     return ((double)inter) / ((double) uni);
 }
