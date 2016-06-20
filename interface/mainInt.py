@@ -182,6 +182,23 @@ class Gui(QtGui.QWidget):
     # export
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), exportMatrix)
 
+    # sort by column
+    self.ui.dataTable.horizontalHeader().setClickable(True)	
+    self.ui.dataTable.setSortingEnabled(True)
+    self.ui.dataTableSelected.horizontalHeader().setClickable(True)	
+    self.ui.dataTableSelected.setSortingEnabled(True)
+	
+    def sort(logicalIndex):
+      #header.sortIndicatorSection()
+      #header.setSortIndicator(logicalIndex, QtCore.Qt.AscendingOrder
+      #self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
+      #self.ui.dataTable.sortByColumn(logicalIndex) #QtCore.Qt.AscendingOrder)
+      #self.emit(QtCore.SIGNAL("layoutChanged()"))
+      print('Header was clicked on column %d' % (logicalIndex))
+	  
+    self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), sort)
+    self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), sort)
+
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
