@@ -28,7 +28,8 @@ from rgt.GeneSet import GeneSet
 me = os.path.abspath(os.path.dirname(__file__))
 lib = cdll.LoadLibrary(os.path.join(me, "..", "librgt.so"))
 ctypes_jaccardC = lib.jaccard
-ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int]
+ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int),
+                            POINTER(c_int), c_int]
 ctypes_jaccardC.restype = c_double
 
 ###############################################################################
@@ -1264,27 +1265,44 @@ class GenomicRegionSet:
         return similarity
 
     def jaccardC(self, query):
+        if not self.sorted:
+            self.sort()
+        if not query.sorted:
+            query.sort()
+
+        assert self.sorted
+        assert query.sorted
+
         # Convert to ctypes
-        chroms = [gr.chrom for gr in self.sequences]
-        chromsSelf = (c_char_p * len(chroms))(*chroms)
+        chroms_self_python = [gr.chrom for gr in self.sequences]
+        chroms_self_c = (c_char_p * len(chroms_self_python))(*chroms_self_python)
+        #print('Converted self.chroms to c', str(chroms_self_python[:4]), '...')
 
-        chroms = [gr.chrom for gr in query.sequences]
-        chromsQuery = (c_char_p * len(chroms))(*chroms)
+        chroms_query_python = [gr.chrom for gr in query.sequences]
+        chroms_query_c = (c_char_p * len(chroms_query_python))(*chroms_query_python)
+        #print('Converted query.chroms to c', str(chroms_query_python[:4]), '...')
 
-        ints = [gr.initial for gr in self.sequences]
-        initialsSelf = (c_int * len(ints))(*ints)
+        initials_self_python = [gr.initial for gr in self.sequences]
+        initials_self_c = (c_int * len(initials_self_python))(*initials_self_python)
+        #print('Converted self.initials to c', str(initials_self_python[:4]), '...')
 
-        ints = [gr.initial for gr in query.sequences]
-        initialsQuery = (c_int * len(ints))(*ints)
+        initials_query_python = [gr.initial for gr in query.sequences]
+        initials_query_c = (c_int * len(initials_query_python))(*initials_query_python)
+        #print('Converted query.initials to c', str(initials_query_python[:4]), '...')
 
-        ints = [gr.final for gr in self.sequences]
-        finalsSelf = (c_int * len(ints))(*ints)
+        finals_self_python = [gr.final for gr in self.sequences]
+        finals_self_c = (c_int * len(finals_self_python))(*finals_self_python)
+        #print('Converted self.finals to c', str(finals_self_python[:4]), '...')
 
-        ints = [gr.final for gr in query.sequences]
-        finalsQuery = (c_int * len(ints))(*ints)
+        finals_query_python = [gr.final for gr in query.sequences]
+        finals_query_c = (c_int * len(finals_query_python))(*finals_query_python)
+        #print('Converted query.finals to c', str(finals_query_python[:4]), '...')
+
+        #print('Converted to ctypes')
 
         # Call C-function
-        return ctypes_jaccardC(chromsSelf, initialsSelf, finalsSelf, len(self), chromsQuery, initialsQuery, finalsQuery, len(query))
+        return ctypes_jaccardC(chroms_self_c, initials_self_c, finals_self_c, len(self), chroms_query_c,
+                               initials_query_c, finals_query_c, len(query))
 
     def jaccard(self, query, use_c=True):
         """Return jaccard index, a value of similarity of these two GenomicRegionSet.
