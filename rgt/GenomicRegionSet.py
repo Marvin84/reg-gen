@@ -645,15 +645,14 @@ class GenomicRegionSet:
 
   else:
    # If there is overlap within self or y, they should be merged first.
-   a = copy.deepcopy(self)
-   b = copy.deepcopy(y)
+   a = self
+   b = y
 #set flag of merge and give the new object to a and b
    if not a.sorted: a.sort()
    if not b.sorted: b.sort()
    if mode == OverlapType.OVERLAP:
-    a.merge()
-    b.merge()
-
+    a.merge(w_return = True)
+    b.merge(w_return = True)
    iter_a = iter(a)
    s = iter_a.next()
    last_j = len(b) - 1
@@ -798,8 +797,8 @@ class GenomicRegionSet:
    # b = deepcopy(regionset)
 
 
-   a = self.merge(w_return = True)
-   b = regionset.merge(w_return=True)
+   if not self.merged: a = self.merge(w_return = True)
+   if not regionset.merged: b = regionset.merge(w_return=True)
 
    if mode_count == "count":
 
@@ -974,7 +973,7 @@ class GenomicRegionSet:
   # If there is overlap within self or y, they should be merged first.
   if self.sorted == False:
    self.sort()
-  b = y.merge(w_return=True)
+  if not y.merged: b = y.merge(w_return=True)
 
   iter_a = iter(self)
   s = iter_a.next()
@@ -1192,6 +1191,7 @@ class GenomicRegionSet:
     z.add(prev_region)
 
    #we set the merged attribute true
+   z.merged = True
    if w_return:
     return z
    else:
@@ -1316,23 +1316,23 @@ class GenomicRegionSet:
       intersect         -5-             -4-    2
       similarity: (5+4+2)/[(8+10+4)+(10+10)-(5+4+2)] = 11/31
   """
-  a = copy.deepcopy(self) #if eliminated must check intersect()
-  # b = copy.deepcopy(query)
+  #a = copy.deepcopy(self)
+  #b = copy.deepcopy(query)
   b = query
-  if a.total_coverage() == 0 and len(a) > 0:
-   print(" ** Warning: \t" + a.name + " has zero length.")
-   return a.name
+  if self.total_coverage() == 0 and len(self) > 0:
+   print(" ** Warning: \t" + self.name + " has zero length.")
+   return self.name
   if b.total_coverage() == 0 and len(b) > 0:
    print(" ** Warning: \t" + b.name + " has zero length.")
    return b.name
 
-  intersects = a.intersect(b)
+  intersects = self.intersect(b)
   # print(intersects.total_coverage(),self.total_coverage(), query.total_coverage(),sep="\t")
   intersects.merge()
   inter = intersects.total_coverage()
 
-  a.combine(b, change_name=False)
-  a.merge()
+  a = self.combine(b, change_name=False, output=True)
+  if not a.merged: a.merge()
   uni = a.total_coverage()
   # print(self.name+"   "+query.name+"   "+str(inter)+"   "+str(uni))
   similarity = inter / uni
@@ -1815,8 +1815,8 @@ class GenomicRegionSet:
    return
 
   else:
-   res = copy.deepcopy(regions)
-   # res = regions
+   #res = copy.deepcopy(regions)
+   res = regions
    # If there is overlap within self or y, they should be merged first.
    if not self.sorted: self.sort()
    if not res.sorted: res.sort()
