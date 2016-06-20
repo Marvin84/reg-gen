@@ -443,12 +443,6 @@ int totalCoverageIntersectGenomicRegionSetsOverlap (
     bool cont_overlap = false;
     // Loop
     while (cont_loop) {
-        if (i > last_i) {
-            printf("i greater than allowed.\n");
-        }
-        if (j > last_j) {
-            printf("j greater than allowed.\n");
-        }
         // If the current genomic regions of the first and second set overlap.
         if (overlap(chromsA[i], initialsA[i], finalsA[i], chromsB[j], initialsB[j], finalsB[j])) {
             // Compute coverage of the resulting genomic region.
@@ -553,18 +547,11 @@ double jaccard (
     const int sizeB
 ) {
     // Compute coverage of the intersection
-    printf("Compute coverage of the intersection.\n");
-    chromsA[sizeA-1];
-    initialsA[sizeA-1];
-    finalsA[sizeA-1];
-    chromsB[sizeB-1];
-    initialsB[sizeB-1];
-    finalsB[sizeB-1];
-    printf("Accessed last elements.\n");
+    // printf("Compute coverage of the intersection.\n");
     const int inter = totalCoverageIntersectGenomicRegionSetsOverlap(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB);
 
     // Compute total coverage of A
-    printf("Compute total coverage of A.\n");
+    // printf("Compute total coverage of A.\n");
     int totalCoverageA = 0;
     for (int i = 0; i < sizeA; i++) {
         const int coverage = (finalsA[i] - initialsA[i]);
@@ -572,7 +559,7 @@ double jaccard (
     }
 
     // Compute total coverage of B
-    printf("Compute total coverage of B.\n");
+    // printf("Compute total coverage of B.\n");
     int totalCoverageB = 0;
     for (int i = 0; i < sizeB; i++) {
         const int coverage = (finalsB[i] - initialsB[i]);
@@ -583,6 +570,6 @@ double jaccard (
     const int uni = totalCoverageA + totalCoverageB - inter;
 
     // Return jaccard index.
-    printf("Return jaccard index.\n");
+    // printf("Return jaccard index.\n");
     return ((double)inter) / ((double) uni);
 }
