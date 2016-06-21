@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "librgt.h"
+
 #define OVERLAP_TYPE_OVERLAP   0
 #define OVERLAP_TYPE_ORIGINAL  1
 #define OVERLAP_TYPE_COMP_INCL 2
@@ -103,6 +105,58 @@ int compareGenomicRegions(
     }
 }
 
+
+/**
+ * Compute the intersection of two genomic region sets using the overlap mode determined by the first parameter.
+ * The region sets have to be sorted and passed as three arrays: the chromosome names of the genomic regions, the
+ * initial positions of the genomic regions, and the final positions of the genomic regions.
+ * The number of genomic regions per set has to be passed as well.
+ *
+ * @param const int overlapType Enum for the overlap type.
+ * @param const char **chromsA  An array of the chromosome names of the genomic regions of the first set.
+ * @param const int *initialsA  An array of the initial positions of the genomic regions of the first set.
+ * @param const int *finalsA    An array of the final positions of the genomic regions of the first set.
+ * @param const int sizeA       The number of genomic regions in the first set.
+ * @param const char **chromsB  An array of the chromosome names of the genomic regions of the second set.
+ * @param const int *initialsB  An array of the initial positions of the genomic regions of the second set.
+ * @param const int *finalsB    An array of the final positions of the genomic regions of the second set.
+ * @param const int sizeB       The number of genomic regions in the second set.
+ * @param int **indicesR        Used to return the result. An array for the indices of genomic regions of the first set,
+ *                              holding the meta data which should be attached to the corresponding genomic region of
+ *                              the result set.
+ * @param int **initialsR       Used to return the result. The initial positions of the genomic regions of the result
+                                set.
+ * @param int **finalsR         Used to return the result. The final positions of the genomic regions of the result set.
+ * @param int *sizeR            Used to return the result. The number of genomic regions in the result set.
+ *
+ * @return None
+ */
+void intersectGenomicRegionSets (
+    const int overlapType,
+    const char **chromsA,
+    const int *initialsA,
+    const int *finalsA,
+    const int sizeA,
+    const char **chromsB,
+    const int *initialsB,
+    const int *finalsB,
+    const int sizeB,
+    int **indicesR,
+    int **initialsR,
+    int **finalsR,
+    int *sizeR
+) {
+    if (overlapType == OVERLAP_TYPE_OVERLAP) {
+        intersectGenomicRegionSetsOverlap(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB, indicesR, initialsR, finalsR, sizeR);
+    } else if (overlapType == OVERLAP_TYPE_ORIGINAL) {
+        intersectGenomicRegionSetsOriginal(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB, indicesR, initialsR, finalsR, sizeR);
+    } else if (overlapType == OVERLAP_TYPE_COMP_INCL) {
+        intersectGenomicRegionSetsCompletelyIncluded(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB, indicesR, initialsR, finalsR, sizeR);
+    } else {
+        printf("Unknown overlap type!");
+    }
+}
+
 /**
  * Returns the minimum of two integer values.
  */
@@ -182,6 +236,7 @@ void intersectGenomicRegionSetsOverlap (
     bool cont_overlap = false;
     // Loop
     while (cont_loop) {
+        printf("%d, %d\n", i, j);
         // If the current genomic regions of the first and second set overlap.
         if (overlap(chromsA[i], initialsA[i], finalsA[i], chromsB[j], initialsB[j], finalsB[j])) {
             // Add a region to the result
@@ -514,58 +569,6 @@ void intersectGenomicRegionSetsCompletelyIncluded (
         }
         // Return the size of the result set.
         *sizeR = k;
-    }
-}
-
-
-/**
- * Compute the intersection of two genomic region sets using the overlap mode determined by the first parameter.
- * The region sets have to be sorted and passed as three arrays: the chromosome names of the genomic regions, the
- * initial positions of the genomic regions, and the final positions of the genomic regions.
- * The number of genomic regions per set has to be passed as well.
- *
- * @param const int overlapType Enum for the overlap type.
- * @param const char **chromsA  An array of the chromosome names of the genomic regions of the first set.
- * @param const int *initialsA  An array of the initial positions of the genomic regions of the first set.
- * @param const int *finalsA    An array of the final positions of the genomic regions of the first set.
- * @param const int sizeA       The number of genomic regions in the first set.
- * @param const char **chromsB  An array of the chromosome names of the genomic regions of the second set.
- * @param const int *initialsB  An array of the initial positions of the genomic regions of the second set.
- * @param const int *finalsB    An array of the final positions of the genomic regions of the second set.
- * @param const int sizeB       The number of genomic regions in the second set.
- * @param int **indicesR        Used to return the result. An array for the indices of genomic regions of the first set,
- *                              holding the meta data which should be attached to the corresponding genomic region of
- *                              the result set.
- * @param int **initialsR       Used to return the result. The initial positions of the genomic regions of the result
-                                set.
- * @param int **finalsR         Used to return the result. The final positions of the genomic regions of the result set.
- * @param int *sizeR            Used to return the result. The number of genomic regions in the result set.
- *
- * @return None
- */
-void intersectGenomicRegionSets (
-    const int overlapType,
-    const char **chromsA,
-    const int *initialsA,
-    const int *finalsA,
-    const int sizeA,
-    const char **chromsB,
-    const int *initialsB,
-    const int *finalsB,
-    const int sizeB,
-    int **indicesR,
-    int **initialsR,
-    int **finalsR,
-    int *sizeR
-) {
-    if (overlapType == OVERLAP_TYPE_OVERLAP) {
-        intersectGenomicRegionSetsOverlap(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB, indicesR, initialsR, finalsR, sizeR);
-    } else if (overlapType == OVERLAP_TYPE_ORIGINAL) {
-        intersectGenomicRegionSetsOriginal(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB, indicesR, initialsR, finalsR, sizeR);
-    } else if (overlapType == OVERLAP_TYPE_COMP_INCL) {
-        intersectGenomicRegionSetsCompletelyIncluded(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB, indicesR, initialsR, finalsR, sizeR);
-    } else {
-        printf("Unknown overlap type!");
     }
 }
 
