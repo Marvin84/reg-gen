@@ -777,7 +777,7 @@ class GenomicRegionSet:
             #z.sort()
             return z
 
-    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=False):
+    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=True):
         """Return the overlapping regions with three different modes.
 
         *Keyword arguments:*
