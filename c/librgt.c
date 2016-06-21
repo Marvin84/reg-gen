@@ -236,7 +236,6 @@ void intersectGenomicRegionSetsOverlap (
     bool cont_overlap = false;
     // Loop
     while (cont_loop) {
-        printf("%d, %d\n", i, j);
         // If the current genomic regions of the first and second set overlap.
         if (overlap(chromsA[i], initialsA[i], finalsA[i], chromsB[j], initialsB[j], finalsB[j])) {
             // Add a region to the result
@@ -248,8 +247,8 @@ void intersectGenomicRegionSetsOverlap (
             // Increment position in result set.
             k++;
             // TODO: Remove debug output
-            printf("Added genomic region to result set: %s[%d, %d]\n\n", chromsA[i], max(initialsA[i], initialsB[j]),
-                min(finalsA[i], finalsB[j]));
+            // printf("Added genomic region to result set: %s[%d, %d]\n\n", chromsA[i], max(initialsA[i], initialsB[j]),
+            //    min(finalsA[i], finalsB[j]));
             // TODO: What does this do?
             if (!cont_overlap) {
                 pre_inter = j;
@@ -318,7 +317,7 @@ void intersectGenomicRegionSetsOverlap (
         }
     }
     // TODO: Remove debug output
-    printf("Result contain  %d GenomicRegion\n", k);
+    // printf("Result contain  %d GenomicRegion\n", k);
     // Return the size of the result set.
     *sizeR = k;
 }
