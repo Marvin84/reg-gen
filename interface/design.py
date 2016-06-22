@@ -71,7 +71,7 @@ class Ui_Form(object):
         self.tableViewMeta.verticalHeader().setVisible(True)
         self.tableViewMeta.verticalHeader().setHighlightSections(False)
         self.pushButtonExport = QtGui.QPushButton(Form)
-        self.pushButtonExport.setGeometry(QtCore.QRect(475, 103, 86, 41))
+        self.pushButtonExport.setGeometry(QtCore.QRect(752, 540, 86, 41))
         self.pushButtonExport.setObjectName(_fromUtf8("pushButtonExport"))
         self.lineEditGeneralSearch = QtGui.QLineEdit(Form)
         self.lineEditGeneralSearch.setGeometry(QtCore.QRect(41, 51, 411, 27))
@@ -99,6 +99,9 @@ class Ui_Form(object):
         self.comboBoxProject.addItem(_fromUtf8(""))
         self.comboBoxProject.addItem(_fromUtf8(""))
         self.comboBoxProject.addItem(_fromUtf8(""))
+        self.pushButtonAdd = QtGui.QPushButton(Form)
+        self.pushButtonAdd.setGeometry(QtCore.QRect(645, 540, 86, 41))
+        self.pushButtonAdd.setObjectName(_fromUtf8("pushButtonAdd"))
 
         self.retranslateUi(Form)
         QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditDataType.clear)
@@ -131,4 +134,5 @@ class Ui_Form(object):
         self.comboBoxProject.setItemText(1, _translate("Form", "bbbbbb", None))
         self.comboBoxProject.setItemText(2, _translate("Form", "jjutr", None))
         self.comboBoxProject.setItemText(3, _translate("Form", "sagege", None))
+        self.pushButtonAdd.setText(_translate("Form", "Add", None))
 

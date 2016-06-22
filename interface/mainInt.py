@@ -185,6 +185,9 @@ class Gui(QtGui.QWidget):
     # export
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), exportMatrix)
 
+    # TODO: add
+    # QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), platzHalter)
+
     # sort by column
     self.ui.dataTable.horizontalHeader().setClickable(True)	
     self.ui.dataTable.setSortingEnabled(True)

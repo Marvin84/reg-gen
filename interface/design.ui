@@ -175,8 +175,8 @@
   <widget class="QPushButton" name="pushButtonExport">
    <property name="geometry">
     <rect>
-     <x>475</x>
-     <y>103</y>
+     <x>752</x>
+     <y>540</y>
      <width>86</width>
      <height>41</height>
     </rect>
@@ -296,6 +296,19 @@
      <string>sagege</string>
     </property>
    </item>
+  </widget>
+  <widget class="QPushButton" name="pushButtonAdd">
+   <property name="geometry">
+    <rect>
+     <x>645</x>
+     <y>540</y>
+     <width>86</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Add</string>
+   </property>
   </widget>
  </widget>
  <resources/>
