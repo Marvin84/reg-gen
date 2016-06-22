@@ -88,7 +88,10 @@ class Gui(QtGui.QWidget):
     # on any change of the filter inputs, just update the data sql model
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
     def onFilterInputChange(content):
-      experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
+      experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui)+dbLayer.sortSql(self.ui),db)
+
+    def onDataInputChangeSelected(content):
+      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
 
     def onExperimentSelect(selected, deselected):
       indexes = self.dataTableSelectionModel.selectedRows()
@@ -107,7 +110,7 @@ class Gui(QtGui.QWidget):
       record = experimentsModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
       selectedExperimentIds.append(str(experiment_id))
-      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
+      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
 
     def selExpDoubleClicked(index):
       print("You Double Clicked: "+index.data().toString())
@@ -116,14 +119,14 @@ class Gui(QtGui.QWidget):
       record = selectedExpModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
       selectedExperimentIds.remove(str(experiment_id))
-      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
+      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
 
     def clearComboBoxes():
       self.ui.comboBoxGenome.setCurrentIndex(0)
       self.ui.comboBoxProject.setCurrentIndex(0)
 
     def exportMatrix():
-      exportModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
+      exportModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
       exportRows = exportModel.rowCount()
       exportColumns = exportModel.columnCount()
 
@@ -192,12 +195,12 @@ class Gui(QtGui.QWidget):
       #header.sortIndicatorSection()
       #header.setSortIndicator(logicalIndex, QtCore.Qt.AscendingOrder
       #self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
-      #self.ui.dataTable.sortByColumn(logicalIndex) #QtCore.Qt.AscendingOrder)
+      self.ui.dataTable.sortByColumn(logicalIndex) #QtCore.Qt.AscendingOrder)
       #self.emit(QtCore.SIGNAL("layoutChanged()"))
       print('Header was clicked on column %d' % (logicalIndex))
 	  
-    self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), sort)
-    self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), sort)
+    self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onFilterInputChange)
+    self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onDataInputChangeSelected)
 
 
 if __name__ == "__main__":

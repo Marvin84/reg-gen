@@ -6,6 +6,10 @@ def getProjectsSql():
   projectsSql = "SELECT '-- all --' AS project UNION SELECT DISTINCT project FROM experiments ORDER BY project ASC"
   return projectsSql
 
+sortByString = "0"
+sortSelByString = "0"
+order = 0
+orderSel = 0
 
 experiment_fields = ["experiment_id","name","description","genome","epigenetic_mark","technique","project","data_type","biosource_name"]
 def getDataSql():
@@ -69,5 +73,34 @@ def getSelectedExpSql(selectedExperimentIds):
         JOIN (SELECT sample_id,value AS biosource_name FROM sample_info WHERE key='biosource_name') bs ON (bs.sample_id = e.sample_id)
         WHERE e.experiment_id IN ('"""+"','".join(selectedExperimentIds)+"""')
   """
-  
+
   return selectedExpSql
+
+def sortSql(ui):
+  sortBy = ui.dataTable.horizontalHeader().sortIndicatorSection()+1
+  sortByString = str(sortBy)
+  order = ui.dataTable.horizontalHeader().sortIndicatorOrder()
+
+  # order: 0 means Ascending, 1 means Descending
+  if(order == 0):
+    sortDataSql = " ORDER BY "+sortByString+" ASC"
+  else:
+    sortDataSql = " ORDER BY "+sortByString+" DESC"
+
+  return sortDataSql
+
+def sortSelectedSql(ui):
+  sortSelBy = ui.dataTableSelected.horizontalHeader().sortIndicatorSection()+1
+  sortSelByString = str(sortSelBy)
+  orderSel = ui.dataTableSelected.horizontalHeader().sortIndicatorOrder()
+
+  # order: 0 means Ascending, 1 means Descending
+  if(orderSel == 0):
+    sortSelDataSql = " ORDER BY "+sortSelByString+" ASC"
+  else:
+    sortSelDataSql = " ORDER BY "+sortSelByString+" DESC"
+
+  return sortSelDataSql
+
+  
+
