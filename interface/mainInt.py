@@ -101,7 +101,7 @@ class Gui(QtGui.QWidget):
         extraDataModel.setQuery(dbLayer.getAdditionalDataSql(experiment_id),db)
       else:
         extraDataModel.clear()
-        # TODO: table does not clear itself?
+        # TODO: table does not clear itself?   	
 
     def expDoubleClicked(index):
       #print("You Double Clicked: "+index.data().toString())
@@ -120,6 +120,20 @@ class Gui(QtGui.QWidget):
       experiment_id = record.value("experiment_id").toString()
       selectedExperimentIds.remove(str(experiment_id))
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+    
+    def addColumns():
+      indexes = self.dataTableSelectionModel.selectedRows()
+      if len(indexes) > 0:
+	rows = sorted(set(index.row() for index in
+                      self.ui.dataTable.selectedIndexes()))           	
+	for i in range(0, len(rows)):
+	  record = experimentsModel.record(indexes[i].row())
+      	  experiment_id = record.value("experiment_id").toString()
+	  selectedExperimentIds.append(str(experiment_id))
+      	  selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+      else: 
+	print("Select a dataset")
+
 
     def clearComboBoxes():
       self.ui.comboBoxGenome.setCurrentIndex(0)
@@ -185,22 +199,8 @@ class Gui(QtGui.QWidget):
     # export
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), exportMatrix)
 
-    # TODO: add
-    # QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), platzHalter)
-
-    # sort by column
-    self.ui.dataTable.horizontalHeader().setClickable(True)	
-    self.ui.dataTable.setSortingEnabled(True)
-    self.ui.dataTableSelected.horizontalHeader().setClickable(True)	
-    self.ui.dataTableSelected.setSortingEnabled(True)
-	
-    def sort(logicalIndex):
-      #header.sortIndicatorSection()
-      #header.setSortIndicator(logicalIndex, QtCore.Qt.AscendingOrder
-      #self.emit(QtCore.SIGNAL("layoutAboutToBeChanged()"))
-      self.ui.dataTable.sortByColumn(logicalIndex) #QtCore.Qt.AscendingOrder)
-      #self.emit(QtCore.SIGNAL("layoutChanged()"))
-      print('Header was clicked on column %d' % (logicalIndex))
+    # add
+    QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), addColumns)
 	  
     self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onFilterInputChange)
     self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onDataInputChangeSelected)
