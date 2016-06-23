@@ -8,6 +8,8 @@ Data
 
 The interface comes with a script to create your own database by crawling data from the [DeepBlue API](http://deepblue.mpi-inf.mpg.de). Just execute `deepBlueData.py` in the `db` subfolder to create a SQLite3 database named `deepBlue.db` and fill it.
 
+As an alternative, we also provide a pre-filled database in the repository. Just extract `db/deepBlue.db.tar.gz` into the `db` folder to obtain it.
+
 
 Interface
 -------------------
