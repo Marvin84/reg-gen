@@ -85,7 +85,10 @@ class Gui(QtGui.QWidget):
     # on any change of the filter inputs, just update the data sql model
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
     def onFilterInputChange(content):
-      experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
+      experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui)+dbLayer.sortSql(self.ui),db)
+
+    def onDataInputChangeSelected(content):
+      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
 
     def onExperimentSelect(selected, deselected):
       indexes = self.dataTableSelectionModel.selectedRows()
@@ -96,7 +99,7 @@ class Gui(QtGui.QWidget):
         self.ui.tableViewMeta.setColumnHidden(0,True)
       else:
         extraDataModel.clear()
-        # TODO: table does not clear itself?
+        # TODO: table does not clear itself?   	
 
     def expDoubleClicked(index):
       #print("You Double Clicked: "+index.data().toString())
@@ -105,13 +108,27 @@ class Gui(QtGui.QWidget):
       record = experimentsModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
       selectedExperimentIds.append(str(experiment_id))
-      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
+      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
 
     def selExpDoubleClicked(index):
       record = selectedExpModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
       selectedExperimentIds.remove(str(experiment_id))
-      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
+      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+    
+    def addColumns():
+      indexes = self.dataTableSelectionModel.selectedRows()
+      if len(indexes) > 0:
+	rows = sorted(set(index.row() for index in
+                      self.ui.dataTable.selectedIndexes()))           	
+	for i in range(0, len(rows)):
+	  record = experimentsModel.record(indexes[i].row())
+      	  experiment_id = record.value("experiment_id").toString()
+	  selectedExperimentIds.append(str(experiment_id))
+      	  selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+      else: 
+	print("Select a dataset")
+
 
     def clearComboBoxes():
       self.ui.comboBoxGenome.setCurrentIndex(0)
@@ -144,7 +161,7 @@ class Gui(QtGui.QWidget):
       fname = QtGui.QFileDialog.getOpenFileName(self, 'Save file', '/home')
 
       # load experimental data from database
-      exportModel.setQuery(dbLayer.getSelectedExpForExportSql(selectedExperimentIds), db)
+      exportModel.setQuery(dbLayer.getSelectedExpForExportSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
       exportRows = exportModel.rowCount()
 
       # write header and experiments to selected file
@@ -185,6 +202,12 @@ class Gui(QtGui.QWidget):
 
     # export
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), exportMatrix)
+
+    # add
+    QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), addColumns)
+	  
+    self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onFilterInputChange)
+    self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onDataInputChangeSelected)
 
 
 if __name__ == "__main__":
