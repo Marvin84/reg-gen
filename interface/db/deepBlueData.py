@@ -56,6 +56,9 @@ print "Done. Inserting experiments..."
 # Insert a row of data
 # In a pass the metadata of an experiment is stored in the database
 for i in range(0, n_exp):
+	if i%1000 == 0 and i > 0:
+		print "Inserted "+str(i)+"/"+str(n_exp)+" experiments..."
+
 	# Command info lists the metadata of experiments
 	(status, info) = server.info(experiments[i][0], user_key)
 
@@ -77,10 +80,8 @@ for i in range(0, n_exp):
 		extra_metadata_data = [experiment['_id'], metadata.keys()[k], metadata.values()[k]]
 		c.execute("INSERT OR IGNORE INTO extra_metadata VALUES (?, ?, ?)", extra_metadata_data)
 
-	if i%1000 == 0 and i > 0:
-		print "Inserted "+str(i)+"/"+str(n_exp)+" experiments..."
 
-print "Inserted a total of "+str(i)+"/"+str(n_exp)+" experiments"
+print "Inserted a total of "+str(i+1)+"/"+str(n_exp)+" experiments"
 print "Commiting database transaction..."
 
 # Save (commit) the changes

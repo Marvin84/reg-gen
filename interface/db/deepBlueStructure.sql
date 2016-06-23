@@ -31,6 +31,8 @@ CREATE INDEX `experiments_genome` ON `experiments` (`genome` ASC);
 CREATE INDEX `experiments_project` ON `experiments` (`project` ASC);
 CREATE INDEX `experiments_genome_project` ON `experiments` (`genome` ASC, `project` ASC);
 CREATE INDEX `experiments_sample_id` ON `experiments` (`sample_id` ASC);
+CREATE INDEX `sample_info_key` ON `sample_info` (`key` ASC);
+CREATE INDEX `extra_metadata_key` ON `extra_metadata` (`key` ASC);
 
 -------------------- full-text search tables with triggers to keep them synced with data tables
 CREATE VIRTUAL TABLE experiments_fts USING fts4(experiment_id,description, content='experiments', notindexed=experiment_id);

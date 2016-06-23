@@ -15,17 +15,17 @@ def connectDB():
   db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
   db.setDatabaseName('db/deepBlue.db')
   ok = db.open()
-	
+  
   if ok == False:
     QtGui.QMessageBox.critical(None, QtGui.qApp.tr("Cannot open database"),
     QtGui.qApp.tr("Unable to establish a database connection."),
-    QtGui.QMessageBox.Cancel)		
+    QtGui.QMessageBox.Cancel)   
     return False
 
   return db
 
 
-selectedExperimentIds = []
+selectedExperimentIds = set([])
 class Gui(QtGui.QWidget):
   def __init__(self, parent = None):
     super(Gui, self).__init__(parent)
@@ -99,7 +99,7 @@ class Gui(QtGui.QWidget):
         self.ui.tableViewMeta.setColumnHidden(0,True)
       else:
         extraDataModel.clear()
-        # TODO: table does not clear itself?   	
+        # TODO: table does not clear itself?    
 
     def expDoubleClicked(index):
       #print("You Double Clicked: "+index.data().toString())
@@ -107,27 +107,26 @@ class Gui(QtGui.QWidget):
 
       record = experimentsModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
-      selectedExperimentIds.append(str(experiment_id))
+      selectedExperimentIds.add(str(experiment_id))
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
 
     def selExpDoubleClicked(index):
       record = selectedExpModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
-      selectedExperimentIds.remove(str(experiment_id))
+      selectedExperimentIds.discard(str(experiment_id))
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
     
     def addColumns():
       indexes = self.dataTableSelectionModel.selectedRows()
       if len(indexes) > 0:
-	rows = sorted(set(index.row() for index in
-                      self.ui.dataTable.selectedIndexes()))           	
-	for i in range(0, len(rows)):
-	  record = experimentsModel.record(indexes[i].row())
-      	  experiment_id = record.value("experiment_id").toString()
-	  selectedExperimentIds.append(str(experiment_id))
-      	  selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
-      else: 
-	print("Select a dataset")
+        rows = sorted(set(index.row() for index in self.ui.dataTable.selectedIndexes()))
+        for i in range(0, len(rows)):
+          record = experimentsModel.record(indexes[i].row())
+          experiment_id = record.value("experiment_id").toString()
+          selectedExperimentIds.add(str(experiment_id))
+          selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+      else:
+        print("Select a dataset")
 
 
     def clearComboBoxes():
@@ -205,7 +204,7 @@ class Gui(QtGui.QWidget):
 
     # add
     QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), addColumns)
-	  
+    
     self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onFilterInputChange)
     self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onDataInputChangeSelected)
 
