@@ -3,6 +3,7 @@ from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
 from design import Ui_Form
 import dbLayer
+import re
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -78,11 +79,7 @@ class Gui(QtGui.QWidget):
       columnWidth = experimentsView.columnWidth(i)
       selectedExpView.setColumnWidth(i, columnWidth)
 
-    # setup and load from experimental matrix textfile
-    # TODO: loading or import function
-    expMatrix = open('expMatrix', 'r')
-    #load
-    expMatrix.close()
+    # sql model for exporting selected experiments
     exportModel = QSqlQueryModel()
 
     # on any change of the filter inputs, just update the data sql model
@@ -96,6 +93,7 @@ class Gui(QtGui.QWidget):
         record = experimentsModel.record(indexes[0].row())
         experiment_id = record.value("experiment_id").toString()
         extraDataModel.setQuery(dbLayer.getAdditionalDataSql(experiment_id),db)
+        self.ui.tableViewMeta.setColumnHidden(0,True)
       else:
         extraDataModel.clear()
         # TODO: table does not clear itself?
@@ -110,9 +108,6 @@ class Gui(QtGui.QWidget):
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
 
     def selExpDoubleClicked(index):
-      print("You Double Clicked: "+index.data().toString())
-      print("In row: \n"+str(index.row()))
-
       record = selectedExpModel.record(index.row())
       experiment_id = record.value("experiment_id").toString()
       selectedExperimentIds.remove(str(experiment_id))
@@ -122,33 +117,42 @@ class Gui(QtGui.QWidget):
       self.ui.comboBoxGenome.setCurrentIndex(0)
       self.ui.comboBoxProject.setCurrentIndex(0)
 
+
+
     def exportMatrix():
-      exportModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
+      def getExportForExperimentRecord(record):
+        # build experiment name from cell name, epigenetic mark and data type (regions/reads)
+        name = re.sub(r'[\s,\+\\\/]', '_', str(record.value("bs.biosource_name").toString()))
+        name += "__"+re.sub(r'[\s,\+\\\/]', '_', str(record.value("e.epigenetic_mark").toString()))
+        tpe = "regions" if str(record.value("e.data_type").toString())=="peaks" else "reads"
+        name += "__"+tpe
+
+        # build file url depending on experiment project
+        project = str(record.value("e.project").toString())
+        if project == 'ENCODE':
+          fname = str(record.value("encode_url").toString())
+        elif project == 'BLUEPRINT Epigenome':
+          fname = "ftp://ftp.ebi.ac.uk/pub/databases/" + str(record.value("blueprint_url").toString())
+        elif project == 'Roadmap Epigenomics':
+          fname = str(record.value("roadmap_url").toString())
+        else:
+          fname = "[UNKNOWN PROJECT]"
+
+        return "\t".join([name, tpe, fname])
+
+      # ask user which file to save the matrix to
+      fname = QtGui.QFileDialog.getOpenFileName(self, 'Save file', '/home')
+
+      # load experimental data from database
+      exportModel.setQuery(dbLayer.getSelectedExpForExportSql(selectedExperimentIds), db)
       exportRows = exportModel.rowCount()
-      exportColumns = exportModel.columnCount()
 
-      """
-      for row in range(0, exportRows):
-        for column in range(0, exportColumns):
-          entry = exportModel.data(exportModel.index(row, column)).toString()
-          print (entry),
-          if column != exportColumns-1:
-            print (" "),
-          sys.stdout.flush()
-        if row != exportRows-1:
-          print()
-      """
-
-      expMatrix = open('expMatrix', 'w')
-      
-      for row in range(0, exportRows):
-        for column in range(0, exportColumns):
-          entry = exportModel.data(exportModel.index(row, column)).toString()
-          expMatrix.write(entry),
-          if column != exportColumns-1:
-            expMatrix.write("  "),
-        if row != exportRows-1:
-          expMatrix.write("")
+      # write header and experiments to selected file
+      expMatrix = open(fname, 'w')
+      expMatrix.write("\t".join(['name','type','file'])+"\n")
+      for i in range(0, exportRows):
+        record = exportModel.record(i)
+        expMatrix.write(getExportForExperimentRecord(record)+"\n")
 
       expMatrix.close()
 
