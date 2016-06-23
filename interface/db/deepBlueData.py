@@ -7,6 +7,16 @@ import xmlrpclib
 import sqlite3
 
 
+# data normalization function, ensures consistency between experiments
+# you can add further normalization of experiment, meta or sample data here
+def normalizeDeepBlueData(experiment):
+	# WGSBS is the same as WGBS -> normalize to WGBS
+	if experiment['technique'] == 'WGSBS':
+		experiment['technique'] = 'WGBS'
+
+	return experiment
+
+
 # Accessing DeepBlue
 
 # Set up the client
@@ -22,8 +32,11 @@ user_key = "anonymous_key"
 # The command has 6 paramenter: genome assembly, epigenetic mark, sample ID, technique, project, and user_key (except user_key all parameters are optional)
 
 # List all experiments without any filter
+print "Querying DeepBlue for experiments..."
 (status, experiments) = server.list_experiments("", "", "", "", "", "", "", user_key)
+n_exp = len(experiments)
 
+print "Got "+str(n_exp)+" experiments."
 
 # Creation of a database and storage of metadata
 
@@ -34,56 +47,41 @@ conn = sqlite3.connect('deepBlue.db')
 # Create a cursor object
 c = conn.cursor()
 
-
-# Create a table
-c.execute('''CREATE TABLE IF NOT EXISTS experiments
-     	(experiment_id VARCHAR(255) NOT NULL, 
-	name text NOT NULL, 
-	description text NOT NULL, 
-	genome VARCHAR(255) NOT NULL, 
-	epigenetic_mark text NOT NULL,
-	sample_id VARCHAR(255) NOT NULL,
-	technique VARCHAR(255) NOT NULL,
-	project text NOT NULL,
-	data_type VARCHAR(255) NOT NULL,
-	type VARCHAR(255) NOT NULL,
-	format text NOT NULL,
-	PRIMARY KEY (experiment_id) )''')
-
-c.execute('''CREATE TABLE IF NOT EXISTS sample_info
-     	(sample_id VARCHAR(255) NOT NULL,
-	key VARCHAR(255) NOT NULL, 
-	value VARCHAR(255) NOT NULL, 
-	PRIMARY KEY (sample_id, key) )''')
-
-c.execute('''CREATE TABLE IF NOT EXISTS extra_metadata
-     	(experiment_id VARCHAR(255) NOT NULL,
-	key VARCHAR(255) NOT NULL,
-	value VARCHAR(255) NOT NULL,
-	PRIMARY KEY (experiment_id, key) )''')
-
+# Create table structure as defiend in structure file
+print "Creating database structure..."
+with open('deepBlueStructure.sql','r') as tableStructure:
+	c.executescript(tableStructure.read())
+print "Done. Inserting experiments..."
 
 # Insert a row of data
 # In a pass the metadata of an experiment is stored in the database
-for i in range(0, len(experiments)):
+for i in range(0, n_exp):
 	# Command info lists the metadata of experiments
 	(status, info) = server.info(experiments[i][0], user_key)
+
+	experiment = normalizeDeepBlueData(info[0])
+
 	# Insert data of experiment[i][0] in table 'experiments'	
-	experiments_data = [info[0]['_id'], info[0]['name'], info[0]['description'], info[0]['genome'], info[0]['epigenetic_mark'], info[0]['sample_id'], info[0]['technique'], info[0]['project'], info[0]['data_type'], info[0]['type'], info[0]['format']]
+	experiments_data = [experiment['_id'], experiment['name'], experiment['description'], experiment['genome'], experiment['epigenetic_mark'], experiment['sample_id'], experiment['technique'], experiment['project'], experiment['data_type'], experiment['type'], experiment['format']]
 	c.execute("INSERT INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", experiments_data)
 	
 	# Insert data of experiment[i][0] in table 'sample_id'	
-	sample_info = info[0]['sample_info']
+	sample_info = experiment['sample_info']
 	for j in range (0, len(sample_info)):	
-		sample_info_data = [info[0]['sample_id'], sample_info.keys()[j], sample_info.values()[j]]
+		sample_info_data = [experiment['sample_id'], sample_info.keys()[j], sample_info.values()[j]]
 		c.execute("INSERT OR IGNORE INTO sample_info VALUES (?, ?, ?)", sample_info_data)
 	
 	# Insert data of experiment[i][0] in table 'extra_metadata'
-	metadata = info[0]['extra_metadata']
+	metadata = experiment['extra_metadata']
 	for k in range (0, len(metadata)):
-		extra_metadata_data = [info[0]['_id'], metadata.keys()[k], metadata.values()[k]]
+		extra_metadata_data = [experiment['_id'], metadata.keys()[k], metadata.values()[k]]
 		c.execute("INSERT OR IGNORE INTO extra_metadata VALUES (?, ?, ?)", extra_metadata_data)
 
+	if i%1000 == 0 and i > 0:
+		print "Inserted "+str(i)+"/"+str(n_exp)+" experiments..."
+
+print "Inserted a total of "+str(i)+"/"+str(n_exp)+" experiments"
+print "Commiting database transaction..."
 
 # Save (commit) the changes
 conn.commit()
@@ -91,3 +89,5 @@ conn.commit()
 # Close the connection
 # Just be sure any changes have been committed or they will be lost
 conn.close()
+
+print "Done"

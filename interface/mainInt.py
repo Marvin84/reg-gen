@@ -13,7 +13,7 @@ except AttributeError:
 
 def connectDB():
   db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
-  db.setDatabaseName('deepBlue.db')
+  db.setDatabaseName('db/deepBlue.db')
   ok = db.open()
 	
   if ok == False:
