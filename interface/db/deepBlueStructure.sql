@@ -31,6 +31,9 @@ CREATE INDEX `experiments_genome` ON `experiments` (`genome` ASC);
 CREATE INDEX `experiments_project` ON `experiments` (`project` ASC);
 CREATE INDEX `experiments_genome_project` ON `experiments` (`genome` ASC, `project` ASC);
 CREATE INDEX `experiments_sample_id` ON `experiments` (`sample_id` ASC);
+CREATE INDEX `experiments_epigenetic_mark` ON `experiments` (`epigenetic_mark` ASC);
+CREATE INDEX `experiments_technique` ON `experiments` (`technique` ASC);
+CREATE INDEX `experiments_data_type` ON `experiments` (`data_type` ASC);
 CREATE INDEX `sample_info_key` ON `sample_info` (`key` ASC);
 CREATE INDEX `extra_metadata_key` ON `extra_metadata` (`key` ASC);
 
