@@ -14,13 +14,45 @@ void intersectGenomicRegionSetsOverlap (
     const int *initialsB,
     const int *finalsB,
     const int sizeB,
-    inr** indicesR,
-    int** initialsR,
-    int** finalsR,
-    int* sizeR
-)
+    int **indicesR,
+    int **initialsR,
+    int **finalsR,
+    int *sizeR
+);
 
 void intersectGenomicRegionSetsOriginal (
+    const char **chromsA,
+    const int *initialsA,
+    const int *finalsA,
+    const int sizeA,
+    const char **chromsB,
+    const int *initialsB,
+    const int *finalsB,
+    const int sizeB,
+    int **indicesR,
+    int **initialsR,
+    int **finalsR,
+    int *sizeR
+);
+
+
+void intersectGenomicRegionSetsCompletelyIncluded (
+    const char **chromsA,
+    const int *initialsA,
+    const int *finalsA,
+    const int sizeA,
+    const char **chromsB,
+    const int *initialsB,
+    const int *finalsB,
+    const int sizeB,
+    int **indicesR,
+    int **initialsR,
+    int **finalsR,
+    int *sizeR
+);
+
+void intersectGenomicRegionSets (
+    const int overlapType,
     const char **chromsA,
     const int *initialsA,
     const int *finalsA,

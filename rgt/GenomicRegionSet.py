@@ -24,13 +24,27 @@ from rgt.Util import GenomeData, OverlapType, AuxiliaryFunctions
 from rgt.GeneSet import GeneSet
 
 # C-Binding of jaccard function
-# TODO: Determine, where to put this
 me = os.path.abspath(os.path.dirname(__file__))
 lib = cdll.LoadLibrary(os.path.join(me, "..", "librgt.so"))
 ctypes_jaccardC = lib.jaccard
 ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int),
                             POINTER(c_int), c_int]
 ctypes_jaccardC.restype = c_double
+
+# C-Binding of intersect overlap function
+intersect_overlap_c = lib.intersectGenomicRegionSetsOverlap
+intersect_overlap_c.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(c_int)]
+intersect_overlap_c.restype = None
+
+# C-Binding of intersect original function
+intersect_original_c = lib.intersectGenomicRegionSetsOriginal
+intersect_original_c.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(c_int)]
+intersect_original_c.restype = None
+
+# C-Binding of intersect completely function
+intersect_completely_included_c = lib.intersectGenomicRegionSetsCompletelyIncluded
+intersect_completely_included_c.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(POINTER(c_int)), POINTER(c_int)]
+intersect_completely_included_c.restype = None
 
 ###############################################################################
 # Class
@@ -621,55 +635,83 @@ class GenomicRegionSet:
             le = 0
         else:
             le = len(geneSet)
-
         return le, len(self.genes), mappedGenes, totalPeaks, regionsToGenes
+    
+    def intersect_c(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False):
+        # If one of the sets is empty, the intersection is trivially empty as well
+        result = GenomicRegionSet(self.name)
+        if len(self) == 0 or len(y) == 0:
+            return result
 
-    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False):
-        """Return the overlapping regions with three different modes.
+        # Otherwise
+        else:
+            # Sort sets if necessary
+            if not self.sorted:
+                self.sort()
+            if not y.sorted:
+                y.sort()
+            assert self.sorted
+            assert y.sorted
+            
+            # If there is overlap within self or y, they should be merged first.
+            if mode == OverlapType.OVERLAP:
+                self.merge()
+                y.merge()
 
-        *Keyword arguments:*
+            # Convert to ctypes
+            len_self = len(self)
+            len_y = len(y)
+            max_len_result = min(len_self, len_y)
 
-            - y -- the GenomicRegionSet which to compare with.
-            - mode -- OverlapType.OVERLAP, OverlapType.ORIGINAL or OverlapType.COMP_INCL.
-            - rm_duplicates -- remove duplicates within the output GenomicRegionSet
+            chromosomes_self_python = [gr.chrom for gr in self.sequences]
+            chromosomes_self_c = (c_char_p * len_self)(*chromosomes_self_python)
 
-        *Return:*
+            chromosomes_y_python = [gr.chrom for gr in y.sequences]
+            chromosomes_y_c = (c_char_p * len_y)(*chromosomes_y_python)
 
-            - A GenomicRegionSet according to the given overlapping mode.
+            initials_self_python = [gr.initial for gr in self.sequences]
+            initials_self_c = (c_int * len_self)(*initials_self_python)
 
-        *mode = OverlapType.OVERLAP*
+            initials_y_python = [gr.initial for gr in y.sequences]
+            initials_y_c = (c_int * len_y)(*initials_y_python)
 
-            Return new GenomicRegionSet including only the overlapping regions with y.
+            finals_self_python = [gr.final for gr in self.sequences]
+            finals_self_c = (c_int * len_self)(*finals_self_python)
 
-            .. note:: it will merge the regions.
+            finals_y_python = [gr.final for gr in y.sequences]
+            finals_y_c = (c_int * len_y)(*finals_y_python)
 
-            ::
+            indices_c = POINTER(c_int)((c_int * max_len_result)())
+            initials_result_c = POINTER(c_int)((c_int * max_len_result)())
+            finals_result_c = POINTER(c_int)((c_int * max_len_result)())
+            size_result_c = c_int()
 
-                self       ----------              ------
-                y                 ----------                    ----
-                Result            ---
 
-        *mode = OverlapType.ORIGINAL*
+            # Call C-function
+            if mode == 0:
+                intersect_overlap_c(chromosomes_self_c, initials_self_c, finals_self_c, len_self, chromosomes_y_c,
+                                    initials_y_c, finals_y_c, len_y, pointer(indices_c), pointer(initials_result_c),
+                                    pointer(finals_result_c), byref(size_result_c))
+            elif mode == 1:
+                intersect_original_c(chromosomes_self_c, initials_self_c, finals_self_c, len_self, chromosomes_y_c,
+                                     initials_y_c, finals_y_c, len_y, pointer(indices_c), pointer(initials_result_c),
+                                     pointer(finals_result_c), byref(size_result_c))
+            elif mode == 2:
+                intersect_completely_included_c(chromosomes_self_c, initials_self_c, finals_self_c, len_self,
+                                                chromosomes_y_c, initials_y_c, finals_y_c, len_y, pointer(indices_c),
+                                                pointer(initials_result_c), pointer(finals_result_c),
+                                                byref(size_result_c))
 
-            Return the regions of original GenomicRegionSet which have any intersections with y.
+            # Construct result set
+            for i in range(size_result_c.value):
+                result.add(GenomicRegion(chromosomes_self_python[indices_c[i]], initials_result_c[i],
+                                         finals_result_c[i]))
 
-            ::
+            if rm_duplicates:
+                result.remove_duplicates()
+            return result
 
-                self       ----------              ------
-                y              ----------                    ----
-                Result     ----------
-
-        *mode = OverlapType.COMP_INCL*
-
-            Return region(s) of the GenomicRegionSet which are 'completely' included by y.
-
-            ::
-
-                self        -------------             ------
-                y              ----------      ---------------              ----
-                Result                                ------
-        """
-
+    def intersect_python(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False):
         z = GenomicRegionSet(self.name)
         if len(self) == 0 or len(y) == 0:
             return z
@@ -685,8 +727,7 @@ class GenomicRegionSet:
                 if not self.merged: a = self.merge(w_return=True)
                 else:
                     a = self
-                if not y.merged:
-                    b = y.merge(w_return=True)
+                if not y.merged: b = y.merge(w_return=True)
                 else:
                     b = y
             iter_a = iter(a)
@@ -704,12 +745,12 @@ class GenomicRegionSet:
                     if s.overlap(b[j]):
 
                         z.add( GenomicRegion(chrom=s.chrom,
-                                              initial=max(s.initial, b[j].initial),
-                                              final=min(s.final, b[j].final),
-                                              name=s.name,
-                                              orientation=s.orientation,
-                                              data=s.data,
-                                              proximity=s.proximity) )
+                                             initial=max(s.initial, b[j].initial),
+                                             final=min(s.final, b[j].final),
+                                             name=s.name,
+                                             orientation=s.orientation,
+                                             data=s.data,
+                                             proximity=s.proximity) )
 
 
                         if cont_overlap == False:
@@ -810,6 +851,57 @@ class GenomicRegionSet:
             if rm_duplicates: z.remove_duplicates()
             # z.sort()
             return z
+
+    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=True):
+        """Return the overlapping regions with three different modes.
+
+        *Keyword arguments:*
+
+            - y -- the GenomicRegionSet which to compare with.
+            - mode -- OverlapType.OVERLAP, OverlapType.ORIGINAL or OverlapType.COMP_INCL.
+            - rm_duplicates -- remove duplicates within the output GenomicRegionSet
+
+        *Return:*
+        
+            - A GenomicRegionSet according to the given overlapping mode.
+
+        *mode = OverlapType.OVERLAP*
+        
+            Return new GenomicRegionSet including only the overlapping regions with y.
+
+            .. note:: it will merge the regions.
+        
+            ::
+
+                self       ----------              ------
+                y                 ----------                    ----
+                Result            ---
+
+        *mode = OverlapType.ORIGINAL*
+        
+            Return the regions of original GenomicRegionSet which have any intersections with y.
+
+            ::
+
+                self       ----------              ------
+                y              ----------                    ----
+                Result     ----------
+
+        *mode = OverlapType.COMP_INCL*
+        
+            Return region(s) of the GenomicRegionSet which are 'completely' included by y.
+
+            ::
+
+                self        -------------             ------
+                y              ----------      ---------------              ----
+                Result                                ------
+        """
+        if use_c:
+            return self.intersect_c(y, mode, rm_duplicates)
+        else:
+            return self.intersect_python(y, mode, rm_duplicates)
+
 
     def intersect_count(self, regionset, mode_count="count", threshold=False):
         """Return the number of regions in regionset A&B in following order: (A-B, B-A, intersection)
