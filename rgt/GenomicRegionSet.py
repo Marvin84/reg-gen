@@ -676,14 +676,19 @@ class GenomicRegionSet:
 
         else:
             # If there is overlap within self or y, they should be merged first.
-            a = self
-            b = y
+            #a = self
+            #b = y
             # set flag of merge and give the new object to a and b
-            if not a.sorted: a.sort()
-            if not b.sorted: b.sort()
+            if not self.sorted: self.sort()
+            if not y.sorted: y.sort()
             if mode == OverlapType.OVERLAP:
-                a.merge(w_return=True)
-                b.merge(w_return=True)
+                if not self.merged: a = self.merge(w_return=True)
+                else:
+                    a = self
+                if not y.merged:
+                    b = y.merge(w_return=True)
+                else:
+                    b = y
             iter_a = iter(a)
             s = iter_a.next()
             last_j = len(b) - 1
