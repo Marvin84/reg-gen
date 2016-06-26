@@ -730,6 +730,9 @@ class GenomicRegionSet:
                 if not y.merged: b = y.merge(w_return=True)
                 else:
                     b = y
+            else:
+                a = self
+                b = y
             iter_a = iter(a)
             s = iter_a.next()
             last_j = len(b) - 1
