@@ -46,18 +46,28 @@ a = deepcopy(bed1)
 a.merge()
 print "bed1 = " + str(bed1.sequences)
 print "a = " + str(a.sequences)
-
-len(bed1)
-len(bed2)
-
-inter = bed1.intersect(bed2)
-len(inter)
-
-sbed1 = bed1.subtract(bed2)
-inter2 = sbed1.intersect(bed2)
-len(inter2)
-
 """
+a = deepcopy(bed1)
+b = deepcopy(bed2)
+print len(a)
+print len(b)
+z1 = GenomicRegionSet(name=a.name)
+z2 = GenomicRegionSet(name=b.name)
+for s in a.sequences[0:3]:
+  z1.add(deepcopy(s))
+for s in b.sequences[0:3]:
+  z2.add(deepcopy(s))
+
+
+
+inter = z1.intersect(z2, use_c=False)
+print len(inter)
+
+#sbed1 = bed1.subtract(bed2)
+#inter2 = sbed1.intersect(bed2)
+#len(inter2)
+
+
 
 #----extend test
 print "---->Extend test<----"
@@ -127,7 +137,7 @@ x.combine(y, change_name=True)
 print "x changed with default call:"
 print x.sequences
 
-"""
+
 
 #---projection test
 
@@ -135,4 +145,4 @@ for s in bed1.sequences[0:3]:
  print s
  s.extend(0,1)
  print s
-"""
+
