@@ -1,7 +1,7 @@
 import sys
 from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
-from design import Ui_Form
+from designAfterWindowed import Ui_MainWindow
 import dbLayer
 import re
 
@@ -26,10 +26,11 @@ def connectDB():
 
 
 selectedExperimentIds = set([])
-class Gui(QtGui.QWidget):
+
+class Gui(QtGui.QMainWindow):
   def __init__(self, parent = None):
     super(Gui, self).__init__(parent)
-    self.ui = Ui_Form()
+    self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
     ui = self.ui
 
@@ -212,6 +213,6 @@ class Gui(QtGui.QWidget):
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     Form = Gui()
-    Form.show()
+    Form.showMaximized()
     sys.exit(app.exec_())
 
