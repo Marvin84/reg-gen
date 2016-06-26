@@ -1402,7 +1402,7 @@ class GenomicRegionSet:
             z = GenomicRegionSet('Clustered region set')
             previous = self.sequences[0]
             for s in self.sequences[1:]:
-                s_ext = self.extend(max_distance, max_distance, w_return=True)
+                s_ext = s.extend(max_distance, max_distance, w_return=True)
                 if s_ext.overlap(previous):
                     previous.initial = min(previous.initial, s.initial)
                     previous.final = max(previous.final, s.final)
