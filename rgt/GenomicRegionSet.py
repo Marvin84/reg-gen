@@ -718,21 +718,16 @@ class GenomicRegionSet:
 
         else:
             # If there is overlap within self or y, they should be merged first.
-            #a = self
-            #b = y
+            #a = deepcopy(self)
+            #b = deepcopy(y)
+            a = self
+            b = y
             # set flag of merge and give the new object to a and b
-            if not self.sorted: self.sort()
-            if not y.sorted: y.sort()
+            if not a.sorted: a.sort()
+            if not b.sorted: b.sort()
             if mode == OverlapType.OVERLAP:
-                if not self.merged: a = self.merge(w_return=True)
-                else:
-                    a = self
-                if not y.merged: b = y.merge(w_return=True)
-                else:
-                    b = y
-            else:
-                a = self
-                b = y
+                if not a.merged: a = a.merge(w_return=True)
+                if not b.merged: b = b.merge(w_return=True)
             iter_a = iter(a)
             s = iter_a.next()
             last_j = len(b) - 1
@@ -855,7 +850,7 @@ class GenomicRegionSet:
             # z.sort()
             return z
 
-    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=True):
+    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=False):
         """Return the overlapping regions with three different modes.
 
         *Keyword arguments:*
@@ -1507,7 +1502,7 @@ class GenomicRegionSet:
         return ctypes_jaccardC(chroms_self_c, initials_self_c, finals_self_c, len(self), chroms_query_c,
                                initials_query_c, finals_query_c, len(query))
 
-    def jaccard(self, query, use_c=True):
+    def jaccard(self, query, use_c=False):
         """Return jaccard index, a value of similarity of these two GenomicRegionSet.
 
         *Keyword arguments:*
