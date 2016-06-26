@@ -928,10 +928,15 @@ class GenomicRegionSet:
         else:
             # a = deepcopy(self)
             # b = deepcopy(regionset)
+            #by fixing intersect you don't need to do deepcopy
 
 
             if not self.merged: a = self.merge(w_return=True)
+            else:
+                a = self
             if not regionset.merged: b = regionset.merge(w_return=True)
+            else:
+                b = regionset
 
             if mode_count == "count":
 

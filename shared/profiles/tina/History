@@ -1,6 +1,5 @@
 01 : The first snapshot before any changes
-<<<<<<< HEAD
-=======
 02 : seed(42) with all the deep copies
 03 : seed(42) eliminated 4 deep copies
->>>>>>> ab8bee13fd60281a82f5c63771f5ad1b6ef692c3
+04 : seed(42) no deepcopies left for jaccard
+
