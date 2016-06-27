@@ -117,7 +117,7 @@ class Gui(QtGui.QMainWindow):
       selectedExperimentIds.discard(str(experiment_id))
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
     
-    def addColumns():
+    def addRows():
       indexes = self.dataTableSelectionModel.selectedRows()
       if len(indexes) > 0:
         rows = sorted(set(index.row() for index in self.ui.dataTable.selectedIndexes()))
@@ -128,6 +128,20 @@ class Gui(QtGui.QMainWindow):
           selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
       else:
         print("Select a dataset")
+
+    def removeRows():
+      model = self.ui.dataTableSelected.selectionModel()
+      indexes = model.selectedRows()
+      if len(indexes) > 0:
+	rows = sorted(set(index.row() for index in
+                      self.ui.dataTableSelected.selectedIndexes()))           	
+	for i in range(0, len(rows)):
+	  record = selectedExpModel.record(indexes[i].row())
+      	  experiment_id = record.value("experiment_id").toString()
+          selectedExperimentIds.discard(str(experiment_id))
+          selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+      else: 
+	print("Select a dataset")
 
 
     def clearComboBoxes():
@@ -204,7 +218,10 @@ class Gui(QtGui.QMainWindow):
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), exportMatrix)
 
     # add
-    QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), addColumns)
+    QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), addRows)
+
+    # remove
+    QtCore.QObject.connect(self.ui.pushButtonRemove, QtCore.SIGNAL(_fromUtf8("clicked()")), removeRows)
     
     self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onFilterInputChange)
     self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onDataInputChangeSelected)
