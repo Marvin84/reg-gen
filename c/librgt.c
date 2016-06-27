@@ -381,9 +381,9 @@ void intersectGenomicRegionSetsOriginal (
             // Add a region to the result
             (*indicesR)[k] = i;
             // spanning from first position contained in both regions...
-            (*initialsR)[k] = max(initialsA[i], initialsB[j]);
+            (*initialsR)[k] = initialsA[i];
             // ... to the last position contained in both regions.
-            (*finalsR)[k] = min(finalsA[i], finalsB[j]);
+            (*finalsR)[k] = finalsA[i];
             // Increment position in result set.
             k++;
             // If the first set has unchecked regions
