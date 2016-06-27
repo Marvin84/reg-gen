@@ -720,6 +720,7 @@ double jaccard (
     const int *finalsB,
     const int sizeB
 ) {
+    int i, j;
     // Compute coverage of the intersection
     // printf("Compute coverage of the intersection.\n");
     const int inter = totalCoverageIntersectGenomicRegionSetsOverlap(chromsA, initialsA, finalsA, sizeA, chromsB, initialsB, finalsB, sizeB);
@@ -727,7 +728,7 @@ double jaccard (
     // Compute total coverage of A
     // printf("Compute total coverage of A.\n");
     int totalCoverageA = 0;
-    for (int i = 0; i < sizeA; i++) {
+    for (i = 0; i < sizeA; i++) {
         const int coverage = (finalsA[i] - initialsA[i]);
         totalCoverageA += coverage;
     }
@@ -735,7 +736,7 @@ double jaccard (
     // Compute total coverage of B
     // printf("Compute total coverage of B.\n");
     int totalCoverageB = 0;
-    for (int j = 0; j < sizeB; j++) {
+    for (j = 0; j < sizeB; j++) {
         const int coverage = (finalsB[j] - initialsB[j]);
         totalCoverageB += coverage;
     }
