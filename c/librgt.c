@@ -237,7 +237,6 @@ void intersectGenomicRegionSetsOverlap (
     const int last_j = sizeB - 1;
     // Flag, whether to continue looping.
     bool cont_loop = true;
-    // TODO: What does this express?
     int pre_inter = 0;
     // Flag, whether an overlap continues
     bool cont_overlap = false;
@@ -253,7 +252,6 @@ void intersectGenomicRegionSetsOverlap (
             (*finalsR)[k] = min(finalsA[i], finalsB[j]);
             // Increment position in result set.
             k++;
-            // TODO: What does this do?
             if (!cont_overlap) {
                 pre_inter = j;
             }
@@ -279,24 +277,10 @@ void intersectGenomicRegionSetsOverlap (
             // There is an interrupt of overlap continuation
             cont_overlap = false;
             // Compare the two current regions.
-            const int comparison = compareGenomicRegions(chromosomesA[i], initialsA[i], finalsA[i], chromosomesB[j], initialsB[j],
-                finalsB[j]);
-            // If the region of the first set is smaller than the one from the second one.
-            if (comparison < 0) {
-                // If the first set has unchecked regions
-                if (i < last_i) {
-                    // Go to the next region.
-                    i++;
-                    // TODO: What is done here?
-                    if ((strcmp(chromosomesA[i], chromosomesB[j]) == 0) && (pre_inter > 0)) {
-                        j = pre_inter;
-                    }
-                } else {
-                    // There are no more regions in the smaller set: It is safe to terminate.
-                    cont_loop = false;
-                }
+            const int comparison = compareGenomicRegions(chromosomesA[i], initialsA[i], finalsA[i], chromosomesB[j], initialsB[j], finalsB[j]);
+
             // If the region of the first set is greater than the one from the second one.
-            } else if (comparison > 0) {
+            if (comparison > 0) {
                 // If the second set has unchecked regions, go to the next region.
                 if (j < last_j) {
                     // Go to the next region.
@@ -305,14 +289,15 @@ void intersectGenomicRegionSetsOverlap (
                     // There are no more regions in the smaller set: It is safe to terminate.
                     cont_loop = false;
                 }
-            // If the region of the first set is equal to the one from the second one, but they do not overlap
-            // TODO: Is this even possible?
             } else {
-                // TODO: Nearly equal to first case!
                 // If the first set has unchecked regions
                 if (i < last_i) {
                     // Go to the next region.
                     i++;
+                    // If the region of the first set is smaller than the one from the second one.
+                    if ((comparison < 0) && (strcmp(chromosomesA[i], chromosomesB[j]) == 0) && (pre_inter > 0)) {
+                        j = pre_inter;
+                    }
                 } else {
                     // There are no more regions in the smaller set: It is safe to terminate.
                     cont_loop = false;
@@ -400,18 +385,9 @@ void intersectGenomicRegionSetsOriginal (
         } else {
             // Compare the two current regions.
             const int comparison = compareGenomicRegions(chromosomesA[i], initialsA[i], finalsA[i], chromosomesB[j], initialsB[j], finalsB[j]);
-            // If the region of the first set is smaller than the one from the second one.
-            if (comparison < 0) {
-                // If the first set has unchecked regions
-                if (i < last_i) {
-                    // Go to the next region.
-                    i++;
-                } else {
-                    // Otherwise, terminate.
-                    cont_loop = false;
-                }
+
             // If the region of the first set is greater than the one from the second one.
-            } else if (comparison > 0) {
+            if (comparison > 0) {
                 // If the second set has unchecked regions
                 if (j < last_j) {
                     // Go to next region.
@@ -420,17 +396,14 @@ void intersectGenomicRegionSetsOriginal (
                     // Otherwise, terminate.
                     cont_loop = false;
                 }
-            // If the region of the first set is equal to the one from the second one, but they do not overlap
-            // TODO: Is this even possible?
             } else {
-                // TODO: Equal to first case.
                 // If the first set has unchecked regions
                 if (i < last_i) {
-                    // Go to the next region.
-                    i++;
+                  // Go to the next region.
+                  i++;
                 } else {
-                    // Otherwise, terminate.
-                    cont_loop = false;
+                  // Otherwise, terminate.
+                  cont_loop = false;
                 }
             }
         }
@@ -489,7 +462,6 @@ void intersectGenomicRegionSetsCompletelyIncluded (
     const int last_i = sizeA - 1;
     // Last valid position in second genomic region set.
     const int last_j = sizeB - 1;
-    // TODO: What does this express?
     int pre_inter = 0;
     // Flag, whether to continue looping.
     bool cont_loop = true;
@@ -509,7 +481,6 @@ void intersectGenomicRegionSetsCompletelyIncluded (
                 // Increment position in result set.
                 k++;
             }
-            // TODO: What is this?
             if (!cont_overlap) {
                 pre_inter = j;
             }
@@ -535,22 +506,9 @@ void intersectGenomicRegionSetsCompletelyIncluded (
             cont_overlap = false;
             // Compare the two current regions.
             const int comparison = compareGenomicRegions(chromosomesA[i], initialsA[i], finalsA[i], chromosomesB[j], initialsB[j], finalsB[j]);
-            // If the region of the first set is smaller than the one from the second one.
-            if (comparison < 0) {
-                // If the first set has unchecked regions
-                if (i < last_i) {
-                    // Go to the next region.
-                    i++;
-                    // TODO: What happens here?
-                    if ((strcmp(chromosomesA[i], chromosomesB[j]) == 0) && (pre_inter > 0)) {
-                        j = pre_inter;
-                    }
-                } else {
-                    // Otherwise, terminate.
-                    cont_loop = false;
-                }
+
             // If the region of the first set is greater than the one from the second one.
-            } else if (comparison > 0) {
+            if (comparison > 0) {
                 // If the second set has unchecked regions
                 if (j < last_j) {
                     // Go to the next region.
@@ -559,13 +517,14 @@ void intersectGenomicRegionSetsCompletelyIncluded (
                     // Otherwise, terminate.
                     cont_loop = false;
                 }
-            // If the region of the first set is equal to the one from the second one, but they do not overlap
-            // TODO: Is this even possible?
-            } else {
+            } else  {
                 // If the first set has unchecked regions
                 if (i < last_i) {
                     // Go to the next region.
                     i++;
+                    if ((comparison < 0) && (strcmp(chromosomesA[i], chromosomesB[j]) == 0) && (pre_inter > 0)) {
+                        j = pre_inter;
+                    }
                 } else {
                     // Otherwise, terminate.
                     cont_loop = false;
@@ -617,7 +576,6 @@ int totalCoverageIntersectGenomicRegionSetsOverlap (
     const int last_j = sizeB - 1;
     // Flag, whether to continue looping.
     bool cont_loop = true;
-    // TODO: What does this express?
     int pre_inter = 0;
     // Flag, whether an overlap continues
     bool cont_overlap = false;
@@ -632,7 +590,6 @@ int totalCoverageIntersectGenomicRegionSetsOverlap (
 
             // Add coverage to total intersection coverage.
             total_intersect_coverage += coverage;
-            // TODO: What does this do?
             if (!cont_overlap) {
                 pre_inter = j;
             }
@@ -658,24 +615,10 @@ int totalCoverageIntersectGenomicRegionSetsOverlap (
             // There is an interrupt of overlap continuation
             cont_overlap = false;
             // Compare the two current regions.
-            const int comparison = compareGenomicRegions(chromosomesA[i], initialsA[i], finalsA[i], chromosomesB[j], initialsB[j],
-                finalsB[j]);
-            // If the region of the first set is smaller than the one from the second one.
-            if (comparison < 0) {
-                // If the first set has unchecked regions
-                if (i < last_i) {
-                    // Go to the next region.
-                    i++;
-                    // TODO: What is done here?
-                    if ((strcmp(chromosomesA[i], chromosomesB[j]) == 0) && (pre_inter > 0)) {
-                        j = pre_inter;
-                    }
-                } else {
-                    // There are no more regions in the smaller set: It is safe to terminate.
-                    cont_loop = false;
-                }
+            const int comparison = compareGenomicRegions(chromosomesA[i], initialsA[i], finalsA[i], chromosomesB[j], initialsB[j], finalsB[j]);
+
             // If the region of the first set is greater than the one from the second one.
-            } else if (comparison > 0) {
+            if (comparison > 0) {
                 // If the second set has unchecked regions, go to the next region.
                 if (j < last_j) {
                     // Go to the next region.
@@ -684,14 +627,14 @@ int totalCoverageIntersectGenomicRegionSetsOverlap (
                     // There are no more regions in the smaller set: It is safe to terminate.
                     cont_loop = false;
                 }
-            // If the region of the first set is equal to the one from the second one, but they do not overlap
-            // TODO: Is this even possible?
             } else {
-                // TODO: Nearly equal to first case!
                 // If the first set has unchecked regions
                 if (i < last_i) {
                     // Go to the next region.
                     i++;
+                    if ((comparison < 0) && (strcmp(chromosomesA[i], chromosomesB[j]) == 0) && (pre_inter > 0)) {
+                        j = pre_inter;
+                    }
                 } else {
                     // There are no more regions in the smaller set: It is safe to terminate.
                     cont_loop = false;
