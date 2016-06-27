@@ -1725,6 +1725,8 @@ class GenomicRegionSet:
         if query.total_coverage() == 0 and len(query) > 0:
             # must set the flag to true
             query_copy = query.extend(0, 1, w_return=True)
+        #check it
+        else: query_copy = query
         # print("coverage of reference: ",self.total_coverage(),"\tcoverage of genome: ",chrom_map.total_coverage())
         if background:  # backgound should be a GenomicRegionSet
             ss = self.intersect(background, OverlapType.OVERLAP)
