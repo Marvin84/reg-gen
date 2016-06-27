@@ -495,14 +495,16 @@ void intersectGenomicRegionSetsCompletelyIncluded (
     while (cont_loop) {
         // If the current genomic regions of the first and second set overlap.
         if (overlap(chromsA[i], initialsA[i], finalsA[i], chromsB[j], initialsB[j], finalsB[j])) {
-            // Add a region to the result
-            (*indicesR)[k] = i;
-            // spanning from first position contained in both regions...
-            (*initialsR)[k] = max(initialsA[i], initialsB[j]);
-            // ... to the last position contained in both regions.
-            (*finalsR)[k] = min(finalsA[i], finalsB[j]);
-            // Increment position in result set.
-            k++;
+            if ((initialsA[i] >= initialsB[j]) && (finalsA[i] <= finalsB[j])) {
+                // Add a region to the result
+                (*indicesR)[k] = i;
+                // spanning from first position contained in both regions...
+                (*initialsR)[k] = max(initialsA[i], initialsB[j]);
+                // ... to the last position contained in both regions.
+                (*finalsR)[k] = min(finalsA[i], finalsB[j]);
+                // Increment position in result set.
+                k++;
+            }
             // TODO: What is this?
             if (!cont_overlap) {
                 pre_inter = j;
