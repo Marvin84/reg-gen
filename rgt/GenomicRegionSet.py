@@ -645,40 +645,44 @@ class GenomicRegionSet:
 
         # Otherwise
         else:
+            a = self
+            b = y
             # Sort sets if necessary
-            if not self.sorted:
-                self.sort()
-            if not y.sorted:
-                y.sort()
-            assert self.sorted
-            assert y.sorted
+            if not a.sorted:
+                a.sort()
+            if not b.sorted:
+                b.sort()
+            assert a.sorted
+            assert b.sorted
             
-            # If there is overlap within self or y, they should be merged first.
+            # If there is overlap within a or b, they should be merged first.
             if mode == OverlapType.OVERLAP:
-                self.merge()
-                y.merge()
+                if not a.merged:
+                    a = a.merge(w_return=True)
+                if not b.merged:
+                    b = b.merge(w_return=True)
 
             # Convert to ctypes
-            len_self = len(self)
-            len_y = len(y)
+            len_self = len(a)
+            len_y = len(b)
             max_len_result = min(len_self, len_y)
 
-            chromosomes_self_python = [gr.chrom for gr in self.sequences]
+            chromosomes_self_python = [gr.chrom for gr in a.sequences]
             chromosomes_self_c = (c_char_p * len_self)(*chromosomes_self_python)
 
-            chromosomes_y_python = [gr.chrom for gr in y.sequences]
+            chromosomes_y_python = [gr.chrom for gr in b.sequences]
             chromosomes_y_c = (c_char_p * len_y)(*chromosomes_y_python)
 
-            initials_self_python = [gr.initial for gr in self.sequences]
+            initials_self_python = [gr.initial for gr in a.sequences]
             initials_self_c = (c_int * len_self)(*initials_self_python)
 
-            initials_y_python = [gr.initial for gr in y.sequences]
+            initials_y_python = [gr.initial for gr in b.sequences]
             initials_y_c = (c_int * len_y)(*initials_y_python)
 
-            finals_self_python = [gr.final for gr in self.sequences]
+            finals_self_python = [gr.final for gr in a.sequences]
             finals_self_c = (c_int * len_self)(*finals_self_python)
 
-            finals_y_python = [gr.final for gr in y.sequences]
+            finals_y_python = [gr.final for gr in b.sequences]
             finals_y_c = (c_int * len_y)(*finals_y_python)
 
             indices_c = POINTER(c_int)((c_int * max_len_result)())
@@ -688,15 +692,15 @@ class GenomicRegionSet:
 
 
             # Call C-function
-            if mode == 0:
+            if mode == OverlapType.OVERLAP:
                 intersect_overlap_c(chromosomes_self_c, initials_self_c, finals_self_c, len_self, chromosomes_y_c,
                                     initials_y_c, finals_y_c, len_y, pointer(indices_c), pointer(initials_result_c),
                                     pointer(finals_result_c), byref(size_result_c))
-            elif mode == 1:
+            elif mode == OverlapType.ORIGINAL:
                 intersect_original_c(chromosomes_self_c, initials_self_c, finals_self_c, len_self, chromosomes_y_c,
                                      initials_y_c, finals_y_c, len_y, pointer(indices_c), pointer(initials_result_c),
                                      pointer(finals_result_c), byref(size_result_c))
-            elif mode == 2:
+            elif mode == OverlapType.COMP_INCL:
                 intersect_completely_included_c(chromosomes_self_c, initials_self_c, finals_self_c, len_self,
                                                 chromosomes_y_c, initials_y_c, finals_y_c, len_y, pointer(indices_c),
                                                 pointer(initials_result_c), pointer(finals_result_c),
