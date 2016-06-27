@@ -852,7 +852,7 @@ class GenomicRegionSet:
             # z.sort()
             return z
 
-    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=True):
+    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=False):
         """Return the overlapping regions with three different modes.
 
         *Keyword arguments:*
@@ -1504,7 +1504,7 @@ class GenomicRegionSet:
         return ctypes_jaccardC(chroms_self_c, initials_self_c, finals_self_c, len(self), chroms_query_c,
                                initials_query_c, finals_query_c, len(query))
 
-    def jaccard(self, query, use_c=True):
+    def jaccard(self, query, use_c=False):
         """Return jaccard index, a value of similarity of these two GenomicRegionSet.
 
         *Keyword arguments:*
@@ -1727,6 +1727,8 @@ class GenomicRegionSet:
         if query.total_coverage() == 0 and len(query) > 0:
             # must set the flag to true
             query_copy = query.extend(0, 1, w_return=True)
+        #check it
+        else: query_copy = query
         # print("coverage of reference: ",self.total_coverage(),"\tcoverage of genome: ",chrom_map.total_coverage())
         if background:  # backgound should be a GenomicRegionSet
             ss = self.intersect(background, OverlapType.OVERLAP)
