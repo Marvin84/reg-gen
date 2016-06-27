@@ -118,30 +118,27 @@ class Gui(QtGui.QMainWindow):
       selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
     
     def addRows():
-      indexes = self.dataTableSelectionModel.selectedRows()
-      if len(indexes) > 0:
-        rows = sorted(set(index.row() for index in self.ui.dataTable.selectedIndexes()))
-        for i in range(0, len(rows)):
-          record = experimentsModel.record(indexes[i].row())
+      indices = self.dataTableSelectionModel.selectedRows()
+      if len(indices) > 0:
+        for index in indices:
+          record = experimentsModel.record(index.row())
           experiment_id = record.value("experiment_id").toString()
           selectedExperimentIds.add(str(experiment_id))
-          selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+        selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
       else:
         print("Select a dataset")
 
     def removeRows():
       model = self.ui.dataTableSelected.selectionModel()
-      indexes = model.selectedRows()
-      if len(indexes) > 0:
-	rows = sorted(set(index.row() for index in
-                      self.ui.dataTableSelected.selectedIndexes()))           	
-	for i in range(0, len(rows)):
-	  record = selectedExpModel.record(indexes[i].row())
-      	  experiment_id = record.value("experiment_id").toString()
+      indices = model.selectedRows()
+      if len(indices) > 0:           
+        for index in indices:
+          record = selectedExpModel.record(index.row())
+          experiment_id = record.value("experiment_id").toString()
           selectedExperimentIds.discard(str(experiment_id))
-          selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+        selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
       else: 
-	print("Select a dataset")
+        print("Select a dataset")
 
 
     def clearComboBoxes():
