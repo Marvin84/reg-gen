@@ -852,7 +852,7 @@ class GenomicRegionSet:
             # z.sort()
             return z
 
-    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=False):
+    def intersect(self, y, mode=OverlapType.OVERLAP, rm_duplicates=False, use_c=True):
         """Return the overlapping regions with three different modes.
 
         *Keyword arguments:*
@@ -1504,7 +1504,7 @@ class GenomicRegionSet:
         return ctypes_jaccardC(chroms_self_c, initials_self_c, finals_self_c, len(self), chroms_query_c,
                                initials_query_c, finals_query_c, len(query))
 
-    def jaccard(self, query, use_c=False):
+    def jaccard(self, query, use_c=True):
         """Return jaccard index, a value of similarity of these two GenomicRegionSet.
 
         *Keyword arguments:*
