@@ -2,8 +2,8 @@ import sys
 from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
 from designAfterWindowed import Ui_MainWindow
+from emExportDialog import emExportDialog
 import dbLayer
-import re
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -34,8 +34,11 @@ class Gui(QtGui.QMainWindow):
     self.ui.setupUi(self)
     ui = self.ui
 
+    self.emExportDialog = emExportDialog()
+    self.emExportDialog.setMainApp(self)
 
-    db = connectDB()
+    self.db = connectDB()
+    db = self.db
 
     # bind data query to table
     experimentsModel = QSqlQueryModel()
@@ -80,9 +83,6 @@ class Gui(QtGui.QMainWindow):
       columnWidth = experimentsView.columnWidth(i)
       selectedExpView.setColumnWidth(i, columnWidth)
 
-    # sql model for exporting selected experiments
-    exportModel = QSqlQueryModel()
-
     # on any change of the filter inputs, just update the data sql model
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
     def onFilterInputChange(content):
@@ -99,8 +99,10 @@ class Gui(QtGui.QMainWindow):
         extraDataModel.setQuery(dbLayer.getAdditionalDataSql(experiment_id),db)
         self.ui.tableViewMeta.setColumnHidden(0,True)
       else:
-        extraDataModel.clear()
-        # TODO: table does not clear itself?    
+        # TODO: table does not clear itself?
+        #extraDataModel.clear()
+        extraDataModel.setQuery("",db)
+
 
     def expDoubleClicked(index):
       #print("You Double Clicked: "+index.data().toString())
@@ -148,41 +150,10 @@ class Gui(QtGui.QMainWindow):
 
 
     def exportMatrix():
-      def getExportForExperimentRecord(record):
-        # build experiment name from cell name, epigenetic mark and data type (regions/reads)
-        name = re.sub(r'[\s,\+\\\/]', '_', str(record.value("bs.biosource_name").toString()))
-        name += "__"+re.sub(r'[\s,\+\\\/]', '_', str(record.value("e.epigenetic_mark").toString()))
-        tpe = "regions" if str(record.value("e.data_type").toString())=="peaks" else "reads"
-        name += "__"+tpe
-
-        # build file url depending on experiment project
-        project = str(record.value("e.project").toString())
-        if project == 'ENCODE':
-          fname = str(record.value("encode_url").toString())
-        elif project == 'BLUEPRINT Epigenome':
-          fname = "ftp://ftp.ebi.ac.uk/pub/databases/" + str(record.value("blueprint_url").toString())
-        elif project == 'Roadmap Epigenomics':
-          fname = str(record.value("roadmap_url").toString())
-        else:
-          fname = "[UNKNOWN PROJECT]"
-
-        return "\t".join([name, tpe, fname])
-
-      # ask user which file to save the matrix to
-      fname = QtGui.QFileDialog.getOpenFileName(self, 'Save file', '/home')
-
-      # load experimental data from database
-      exportModel.setQuery(dbLayer.getSelectedExpForExportSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
-      exportRows = exportModel.rowCount()
-
-      # write header and experiments to selected file
-      expMatrix = open(fname, 'w')
-      expMatrix.write("\t".join(['name','type','file'])+"\n")
-      for i in range(0, exportRows):
-        record = exportModel.record(i)
-        expMatrix.write(getExportForExperimentRecord(record)+"\n")
-
-      expMatrix.close()
+      # open dialog
+      self.emExportDialog.setSelectedExperiments(selectedExperimentIds)
+      self.emExportDialog.initTable()
+      self.emExportDialog.show()
 
 
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
