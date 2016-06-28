@@ -1,7 +1,7 @@
 import sys
 from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
-from designAfterWindowed import Ui_MainWindow
+from design1 import Ui_MainWindow
 from emExportDialog import emExportDialog
 import dbLayer
 
