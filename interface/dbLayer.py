@@ -11,7 +11,8 @@ sortSelByString = "0"
 order = 0
 orderSel = 0
 
-experiment_fields = ["experiment_id","name","description","genome","epigenetic_mark","technique","project","data_type","biosource_name"]
+experiment_fields = ["experiment_id","biosource_name AS Biosource","genome as Genome","epigenetic_mark AS 'Epicgenetic Mark'","technique AS Technique","data_type AS Type","project AS Project","description AS Description","name AS Name"]
+experiment_fields_raw = ["experiment_id","biosource_name","genome","epigenetic_mark","technique","data_type","project","description","name"]
 def getDataSql():
   dataSql = """SELECT """+",".join(experiment_fields)+"""
         FROM experiments e 
@@ -58,7 +59,7 @@ def buildSqlWhere(ui):
       SELECT experiment_id FROM extra_metadata_fts WHERE value MATCH '"+content+"' 
       UNION SELECT e.experiment_id FROM sample_info_fts s JOIN experiments e ON (e.sample_id = s.sample_id) WHERE s.value MATCH '"+content+"'
     )"""
-    generalSearchWhere = "(" + " OR ".join(map(lambda fieldName: fieldName+" LIKE '%"+content+"%'", experiment_fields)) + " OR "+metadataSearchWhere+")"
+    generalSearchWhere = "(" + " OR ".join(map(lambda fieldName: fieldName+" LIKE '%"+content+"%'", experiment_fields_raw)) + " OR "+metadataSearchWhere+")"
 
   res = ""
   if len(columnWhere+generalSearchWhere) > 0:
@@ -68,9 +69,7 @@ def buildSqlWhere(ui):
 
 
 def getAdditionalDataSql(experiment_id):
-  addDataSql = """SELECT 10,'---------------' AS Property, 'Add. Meta Data' AS Value
-  UNION SELECT 11,'' AS Property, '' AS Value
-  UNION SELECT 20,Property,Value FROM (SELECT key AS Property, value AS Value FROM extra_metadata WHERE experiment_id = '"""+experiment_id+"""' ORDER BY Property ASC)
+  addDataSql = """SELECT 20,Property,Value FROM (SELECT key AS Property, value AS Value FROM extra_metadata WHERE experiment_id = '"""+experiment_id+"""' ORDER BY Property ASC)
   UNION SELECT 21,'' AS Property, '' AS Value
   UNION SELECT 22,'---------------' AS Property, 'Sample Information' AS Value
   UNION SELECT 23,'' AS Property, '' AS Value
@@ -116,7 +115,7 @@ def sortSelectedSql(ui):
   return sortSelDataSql
 
 def getSelectedExpForExportSql(selectedExperimentIds):
-  selectedExpSql = """SELECT e.experiment_id, e.data_type, e.epigenetic_mark, e.project, bs.biosource_name, f.file AS blueprint_url, u.url AS roadmap_url, u2.original_file_url AS encode_url
+  selectedExpSql = """SELECT e.experiment_id, e.data_type, e.epigenetic_mark, e.project, e.technique, e.genome, bs.biosource_name, f.file AS blueprint_url, u.url AS roadmap_url, u2.original_file_url AS encode_url
         FROM experiments e 
         JOIN (SELECT sample_id,value AS biosource_name FROM sample_info WHERE key='biosource_name') bs ON (bs.sample_id = e.sample_id)
         LEFT JOIN (SELECT experiment_id,value AS file FROM extra_metadata WHERE key='FILE') f ON (f.experiment_id = e.experiment_id)

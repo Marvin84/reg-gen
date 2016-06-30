@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'emExportDialog.ui'
+# Form implementation generated from reading ui file 'Ui_emExportDialog.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -30,9 +30,8 @@ class Ui_Dialog(object):
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.emExport = QtGui.QTableWidget(Dialog)
         self.emExport.setObjectName(_fromUtf8("emExport"))
-        #self.emExport.setColumnCount(0)
-        #self.emExport.setRowCount(0)
-
+        self.emExport.setColumnCount(0)
+        self.emExport.setRowCount(0)
         self.verticalLayout.addWidget(self.emExport)
         self.buttonBox = QtGui.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -46,5 +45,5 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Experimental Matrix Export", None))
 

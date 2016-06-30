@@ -25,174 +25,190 @@ def connectDB():
   return db
 
 
-selectedExperimentIds = set([])
-
 class Gui(QtGui.QMainWindow):
   def __init__(self, parent = None):
     super(Gui, self).__init__(parent)
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
-    ui = self.ui
 
+    # basic initialization
+    self.selectedExperimentIds = set([])
+    self.db = connectDB()
+
+    # initialize dialogs
     self.emExportDialog = emExportDialog()
     self.emExportDialog.setMainApp(self)
 
-    self.db = connectDB()
-    db = self.db
-
-    # bind data query to table
-    experimentsModel = QSqlQueryModel()
-    experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui),db)
-    dataColumns = experimentsModel.columnCount()
-
-    experimentsView = self.ui.dataTable
-    experimentsView.setModel(experimentsModel)
-    for i in range(2, dataColumns):
-      experimentsView.resizeColumnToContents(i)
-
-    experimentsView.setColumnHidden(0,True) # hide experiment id
-    experimentsView.show()
-    self.dataTableSelectionModel = experimentsView.selectionModel()
-
-
     # bind sql query for genome and project selectors
     genomeModel = QSqlQueryModel()
-    genomeModel.setQuery(dbLayer.getGenomesSql(),db)
+    genomeModel.setQuery(dbLayer.getGenomesSql(), self.db)
     self.ui.comboBoxGenome.setModel(genomeModel)
 
     projectsModel = QSqlQueryModel()
-    projectsModel.setQuery(dbLayer.getProjectsSql(),db)
+    projectsModel.setQuery(dbLayer.getProjectsSql(), self.db)
     self.ui.comboBoxProject.setModel(projectsModel)
 
-
     # bind sql model for extra data selector
-    extraDataModel = QSqlQueryModel()
-    self.ui.tableViewMeta.setModel(extraDataModel)
+    self.extraDataModel = QSqlQueryModel()
+    self.ui.tableViewMeta.setModel(self.extraDataModel)
 
+    # bind main data query to search result table
+    self.experimentsModel = QSqlQueryModel()
+    self.experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui), self.db)
+    self.ui.dataTable.setModel(self.experimentsModel)
+    
+    # selection model
+    self.dataTableSelectionModel = self.ui.dataTable.selectionModel()
 
     # bind sql model for selected experiments
-    selectedExpModel = QSqlQueryModel()
-    selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds), db)
-    selectionColumns = selectedExpModel.columnCount()
+    self.selectedExpModel = QSqlQueryModel()
+    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds), self.db)
+    self.ui.dataTableSelected.setModel(self.selectedExpModel)
+
+
+    # initialize TableViews
+    experimentsView = self.ui.dataTable
+    experimentsView.setColumnHidden(0,True) # hide experiment id
+    experimentsView.resizeColumnsToContents()
+    experimentsView.resizeRowsToContents()
+    experimentsView.show()
 
     selectedExpView = self.ui.dataTableSelected
-    selectedExpView.setModel(selectedExpModel)
-    selectedExpView.setColumnHidden(0,True)
+    selectedExpView.setColumnHidden(0,True) # hide experiment id
+    selectedExpView.resizeColumnsToContents()
+    selectedExpView.resizeRowsToContents()
+    selectedExpView.show()
 
-    for i in range(2, selectionColumns):
-      columnWidth = experimentsView.columnWidth(i)
-      selectedExpView.setColumnWidth(i, columnWidth)
+    # set all the signal handlers
+    self.initializeSignalHandlers()
 
-    # on any change of the filter inputs, just update the data sql model
+
+  # handler for changes of filters and comboBoxes
+  # on any change of the filter inputs, just update the data sql model
+  def onFilterInputChange(self,content):
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
-    def onFilterInputChange(content):
-      experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui)+dbLayer.sortSql(self.ui),db)
+    self.experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui)+dbLayer.sortSql(self.ui),self.db)
 
-    def onDataInputChangeSelected(content):
-      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
+  # handler for sorting table for selected experiments
+  def onSelectedSortingChange(self,content):
+    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
 
-    def onExperimentSelect(selected, deselected):
-      indexes = self.dataTableSelectionModel.selectedRows()
-      if len(indexes) == 1:
-        record = experimentsModel.record(indexes[0].row())
+  # handler for selection changes in main experiment table
+  # updates metadata table
+  def onExperimentSelect(self,selected, deselected):
+    indexes = self.dataTableSelectionModel.selectedRows()
+    if len(indexes) == 1:
+      record = self.experimentsModel.record(indexes[0].row())
+      experiment_id = record.value("experiment_id").toString()
+      self.extraDataModel.setQuery(dbLayer.getAdditionalDataSql(experiment_id),self.db)
+      self.ui.tableViewMeta.setColumnHidden(0,True)
+    else:
+      # TODO: table does not clear itself?
+      #self.extraDataModel.clear()
+      self.extraDataModel.setQuery("",self.db)
+
+
+  # double-click handler for experiments table
+  # adds experiment to experimental matrix
+  def expDoubleClicked(self,index):
+    record = self.experimentsModel.record(index.row())
+    experiment_id = record.value("experiment_id").toString()
+    self.selectedExperimentIds.add(str(experiment_id))
+    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+
+
+  # double-click handler for selected experiments table
+  # removes experiment from experimental matrix
+  def selExpDoubleClicked(self,index):
+    record = self.selectedExpModel.record(index.row())
+    experiment_id = record.value("experiment_id").toString()
+    self.selectedExperimentIds.discard(str(experiment_id))
+    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+  
+  # add button handler
+  # adds all selected experiments to experimental matrix
+  def addRows(self):
+    indices = self.dataTableSelectionModel.selectedRows()
+    if len(indices) > 0:
+      for index in indices:
+        record = self.experimentsModel.record(index.row())
         experiment_id = record.value("experiment_id").toString()
-        extraDataModel.setQuery(dbLayer.getAdditionalDataSql(experiment_id),db)
-        self.ui.tableViewMeta.setColumnHidden(0,True)
-      else:
-        # TODO: table does not clear itself?
-        #extraDataModel.clear()
-        extraDataModel.setQuery("",db)
+        self.selectedExperimentIds.add(str(experiment_id))
+      self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+    else:
+      print("Select a dataset")
+
+  # remove button handler
+  # removes all selected experiments from experimental matrix
+  def removeRows(self):
+    model = self.ui.dataTableSelected.selectionModel()
+    indices = model.selectedRows()
+    if len(indices) > 0:           
+      for index in indices:
+        record = self.selectedExpModel.record(index.row())
+        experiment_id = record.value("experiment_id").toString()
+        self.selectedExperimentIds.discard(str(experiment_id))
+      self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+    else: 
+      print("Select a dataset")
+
+  # clear button click handler
+  # resets comboBoxes
+  def clearComboBoxes(self):
+    self.ui.comboBoxGenome.setCurrentIndex(0)
+    self.ui.comboBoxProject.setCurrentIndex(0)
+
+  # export button click handler
+  # opens export dialog
+  def exportMatrix(self):
+    if len(self.selectedExperimentIds) == 0:
+      return
+
+    # open dialog
+    self.emExportDialog.setSelectedExperiments(self.selectedExperimentIds)
+    self.emExportDialog.initTable()
+    self.emExportDialog.show()
 
 
-    def expDoubleClicked(index):
-      #print("You Double Clicked: "+index.data().toString())
-      #print("In row: \n"+str(index.row()))
-
-      record = experimentsModel.record(index.row())
-      experiment_id = record.value("experiment_id").toString()
-      selectedExperimentIds.add(str(experiment_id))
-      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
-
-    def selExpDoubleClicked(index):
-      record = selectedExpModel.record(index.row())
-      experiment_id = record.value("experiment_id").toString()
-      selectedExperimentIds.discard(str(experiment_id))
-      selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
-    
-    def addRows():
-      indices = self.dataTableSelectionModel.selectedRows()
-      if len(indices) > 0:
-        for index in indices:
-          record = experimentsModel.record(index.row())
-          experiment_id = record.value("experiment_id").toString()
-          selectedExperimentIds.add(str(experiment_id))
-        selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
-      else:
-        print("Select a dataset")
-
-    def removeRows():
-      model = self.ui.dataTableSelected.selectionModel()
-      indices = model.selectedRows()
-      if len(indices) > 0:           
-        for index in indices:
-          record = selectedExpModel.record(index.row())
-          experiment_id = record.value("experiment_id").toString()
-          selectedExperimentIds.discard(str(experiment_id))
-        selectedExpModel.setQuery(dbLayer.getSelectedExpSql(selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), db)
-      else: 
-        print("Select a dataset")
-
-
-    def clearComboBoxes():
-      self.ui.comboBoxGenome.setCurrentIndex(0)
-      self.ui.comboBoxProject.setCurrentIndex(0)
-
-
-
-    def exportMatrix():
-      # open dialog
-      self.emExportDialog.setSelectedExperiments(selectedExperimentIds)
-      self.emExportDialog.initTable()
-      self.emExportDialog.show()
-
-
+  # connects signal handlers to widget signals
+  def initializeSignalHandlers(self):
     QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), self.ui.dataTable.update)
     QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.ui.dataTable.update)
 
     # bind selectors
-    QtCore.QObject.connect(self.ui.comboBoxGenome, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.comboBoxProject, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), onFilterInputChange)
+    QtCore.QObject.connect(self.ui.comboBoxGenome, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), self.onFilterInputChange)
+    QtCore.QObject.connect(self.ui.comboBoxProject, QtCore.SIGNAL(_fromUtf8("currentIndexChanged(QString)")), self.onFilterInputChange)
 
     # bind filter input change handler to all inputs
-    QtCore.QObject.connect(self.ui.lineEditName, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditDescription, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditEpigenetic, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditBiosource, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditDataType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
-    QtCore.QObject.connect(self.ui.lineEditGeneralSearch, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditName, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditDescription, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditEpigenetic, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditTechnique, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditBiosource, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditDataType, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.onFilterInputChange)
+    QtCore.QObject.connect(self.ui.lineEditGeneralSearch, QtCore.SIGNAL(_fromUtf8("textChanged(QString)")), self.onFilterInputChange)
 
     # add double clicked row in data table to selection table
-    QtCore.QObject.connect(self.ui.dataTable, QtCore.SIGNAL(_fromUtf8("doubleClicked(QModelIndex)")), expDoubleClicked)
-    QtCore.QObject.connect(self.ui.dataTableSelected, QtCore.SIGNAL(_fromUtf8("doubleClicked(QModelIndex)")), selExpDoubleClicked)
+    QtCore.QObject.connect(self.ui.dataTable, QtCore.SIGNAL(_fromUtf8("doubleClicked(QModelIndex)")), self.expDoubleClicked)
+    QtCore.QObject.connect(self.ui.dataTableSelected, QtCore.SIGNAL(_fromUtf8("doubleClicked(QModelIndex)")), self.selExpDoubleClicked)
 
     # bind experiment selection
-    self.dataTableSelectionModel.selectionChanged.connect(onExperimentSelect)
+    self.dataTableSelectionModel.selectionChanged.connect(self.onExperimentSelect)
 
     # clear
-    QtCore.QObject.connect(self.ui.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), clearComboBoxes)
+    QtCore.QObject.connect(self.ui.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.clearComboBoxes)
 
     # export
-    QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), exportMatrix)
+    QtCore.QObject.connect(self.ui.pushButtonExport, QtCore.SIGNAL(_fromUtf8("clicked()")), self.exportMatrix)
 
     # add
-    QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), addRows)
+    QtCore.QObject.connect(self.ui.pushButtonAdd, QtCore.SIGNAL(_fromUtf8("clicked()")), self.addRows)
 
     # remove
-    QtCore.QObject.connect(self.ui.pushButtonRemove, QtCore.SIGNAL(_fromUtf8("clicked()")), removeRows)
+    QtCore.QObject.connect(self.ui.pushButtonRemove, QtCore.SIGNAL(_fromUtf8("clicked()")), self.removeRows)
     
-    self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onFilterInputChange)
-    self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), onDataInputChangeSelected)
+    self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), self.onFilterInputChange)
+    self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), self.onSelectedSortingChange)
 
 
 if __name__ == "__main__":
@@ -200,4 +216,3 @@ if __name__ == "__main__":
     Form = Gui()
     Form.showMaximized()
     sys.exit(app.exec_())
-
