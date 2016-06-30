@@ -90,6 +90,10 @@ class Gui(QtGui.QMainWindow):
     header = self.ui.dataTableSelected.horizontalHeader()
     self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSql(header), self.db)
 
+    self.ui.dataTableSelected.resizeColumnsToContents()
+    self.ui.dataTableSelected.resizeRowsToContents()
+    
+
   # handler for changes of filters and comboBoxes
   # on any change of the filter inputs, just update the data sql model
   def onFilterInputChange(self,content):
