@@ -54,7 +54,7 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
 
     # load experimental data from database
     self.exportModel = QSqlQueryModel()
-    self.exportModel.setQuery(dbLayer.getSelectedExpForExportSql(self.selExpIds)+dbLayer.sortSelectedSql(self.mainApp.ui), self.mainApp.db)
+    self.exportModel.setQuery(dbLayer.getSelectedExpForExportSql(self.selExpIds)+dbLayer.sortSql(self.mainApp.ui.dataTableSelected.horizontalHeader()), self.mainApp.db)
     exportRows = self.exportModel.rowCount()
 
     # prepare table

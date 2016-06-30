@@ -82,16 +82,23 @@ class Gui(QtGui.QMainWindow):
     # set all the signal handlers
     self.initializeSignalHandlers()
 
+  def reloadExperiments(self):
+    header = self.ui.dataTable.horizontalHeader()
+    self.experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui)+dbLayer.sortSql(header),self.db)
+
+  def reloadSelectedExperiments(self):
+    header = self.ui.dataTableSelected.horizontalHeader()
+    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSql(header), self.db)
 
   # handler for changes of filters and comboBoxes
   # on any change of the filter inputs, just update the data sql model
   def onFilterInputChange(self,content):
     # TODO: maybe be more efficient to let the table perform the sorting instead of the database?
-    self.experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui)+dbLayer.sortSql(self.ui),self.db)
+    self.reloadExperiments()
 
   # handler for sorting table for selected experiments
   def onSelectedSortingChange(self,content):
-    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+    self.reloadSelectedExperiments()
 
   # handler for selection changes in main experiment table
   # updates metadata table
@@ -114,7 +121,7 @@ class Gui(QtGui.QMainWindow):
     record = self.experimentsModel.record(index.row())
     experiment_id = record.value("experiment_id").toString()
     self.selectedExperimentIds.add(str(experiment_id))
-    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+    self.reloadSelectedExperiments()
 
 
   # double-click handler for selected experiments table
@@ -123,7 +130,7 @@ class Gui(QtGui.QMainWindow):
     record = self.selectedExpModel.record(index.row())
     experiment_id = record.value("experiment_id").toString()
     self.selectedExperimentIds.discard(str(experiment_id))
-    self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+    self.reloadSelectedExperiments()
   
   # add button handler
   # adds all selected experiments to experimental matrix
@@ -134,7 +141,7 @@ class Gui(QtGui.QMainWindow):
         record = self.experimentsModel.record(index.row())
         experiment_id = record.value("experiment_id").toString()
         self.selectedExperimentIds.add(str(experiment_id))
-      self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+      self.reloadSelectedExperiments()
     else:
       print("Select a dataset")
 
@@ -148,7 +155,7 @@ class Gui(QtGui.QMainWindow):
         record = self.selectedExpModel.record(index.row())
         experiment_id = record.value("experiment_id").toString()
         self.selectedExperimentIds.discard(str(experiment_id))
-      self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds)+dbLayer.sortSelectedSql(self.ui), self.db)
+      self.reloadSelectedExperiments()
     else: 
       print("Select a dataset")
 

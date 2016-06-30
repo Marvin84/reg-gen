@@ -6,11 +6,6 @@ def getProjectsSql():
   projectsSql = "SELECT '-- all --' AS project UNION SELECT DISTINCT project FROM experiments ORDER BY project ASC"
   return projectsSql
 
-sortByString = "0"
-sortSelByString = "0"
-order = 0
-orderSel = 0
-
 experiment_fields = ["experiment_id","biosource_name AS Biosource","genome as Genome","epigenetic_mark AS 'Epicgenetic Mark'","technique AS Technique","data_type AS Type","project AS Project","description AS Description","name AS Name"]
 experiment_fields_raw = ["experiment_id","biosource_name","genome","epigenetic_mark","technique","data_type","project","description","name"]
 def getDataSql():
@@ -88,31 +83,16 @@ def getSelectedExpSql(selectedExperimentIds):
 
   return selectedExpSql
 
-def sortSql(ui):
-  sortBy = ui.dataTable.horizontalHeader().sortIndicatorSection()+1
-  sortByString = str(sortBy)
-  order = ui.dataTable.horizontalHeader().sortIndicatorOrder()
+
+def sortSql(tableHeader):
+  sortBy = tableHeader.sortIndicatorSection()+1
+  order = tableHeader.sortIndicatorOrder()
 
   # order: 0 means Ascending, 1 means Descending
-  if(order == 0):
-    sortDataSql = " ORDER BY "+sortByString+" ASC"
-  else:
-    sortDataSql = " ORDER BY "+sortByString+" DESC"
+  sortDataSql = " ORDER BY "+str(sortBy)+ (" ASC" if order == 0 else " DESC")
 
   return sortDataSql
-
-def sortSelectedSql(ui):
-  sortSelBy = ui.dataTableSelected.horizontalHeader().sortIndicatorSection()+1
-  sortSelByString = str(sortSelBy)
-  orderSel = ui.dataTableSelected.horizontalHeader().sortIndicatorOrder()
-
-  # order: 0 means Ascending, 1 means Descending
-  if(orderSel == 0):
-    sortSelDataSql = " ORDER BY "+sortSelByString+" ASC"
-  else:
-    sortSelDataSql = " ORDER BY "+sortSelByString+" DESC"
-
-  return sortSelDataSql
+  
 
 def getSelectedExpForExportSql(selectedExperimentIds):
   selectedExpSql = """SELECT e.experiment_id, e.data_type, e.epigenetic_mark, e.project, e.technique, e.genome, bs.biosource_name, f.file AS blueprint_url, u.url AS roadmap_url, u2.original_file_url AS encode_url
