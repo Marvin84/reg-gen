@@ -10,7 +10,12 @@ from gc import collect
 from .. Util import ErrorHandler
 
 # External
-from MOODS import search
+try:
+    import MOODS.tools
+    import MOODS.scan
+except:
+    import MOODS
+
 
 ###################################################################################################
 # Functions
@@ -46,36 +51,81 @@ def match_single(motif, sequence, genomic_region, output_file, unique_threshold=
         motif_max = motif.max
  
     # Performing motif matching
-    for search_result in search(sequence, [motif.pssm_list], current_threshold, absolute_threshold=True, both_strands=True):
-        for (position, score) in search_result:
+    try:
+        results = MOODS.search(sequence, [motif.pssm_list], current_threshold, absolute_threshold=True, both_strands=True)
 
-            # Verifying unique threshold acceptance
-            if(unique_threshold and score/motif.len < unique_threshold): continue
+        for search_result in results:
+            for (position, score) in search_result:
+                # Verifying unique threshold acceptance
+                if (unique_threshold and score / motif.len < unique_threshold): continue
 
-            # If match forward strand
-            if(position >= 0):
-                p1 = genomic_region.initial + position
-                strand = "+"
-            # If match reverse strand
-            elif(not motif.is_palindrome):
-                p1 = genomic_region.initial - position
-                strand = "-"
-            else: continue
+                # If match forward strand
+                if (position >= 0):
+                    p1 = genomic_region.initial + position
+                    strand = "+"
+                # If match reverse strand
+                elif (not motif.is_palindrome):
+                    p1 = genomic_region.initial - position
+                    strand = "-"
+                else:
+                    continue
 
-            # Evaluating p2
-            p2 = p1 + motif.len
+                # Evaluating p2
+                p2 = p1 + motif.len
 
-            # Evaluating score (integer between 0 and 1000 -- needed for bigbed transformation)
-            if(normalize_bitscore): # Normalized bitscore = standardize to integer between 0 and 1000 (needed for bigbed transformation)
-                if(motif_max > eval_threshold):
-                    norm_score = int( ( (score - eval_threshold) * 1000.0) / (motif_max - eval_threshold) )
-                else: norm_score = 1000
-            else: # Keep the original bitscore
-                if(unique_threshold): norm_score = score/motif.len
-                else: norm_score = score
+                # Evaluating score (integer between 0 and 1000 -- needed for bigbed transformation)
+                if (
+                normalize_bitscore):  # Normalized bitscore = standardize to integer between 0 and 1000 (needed for bigbed transformation)
+                    if (motif_max > eval_threshold):
+                        norm_score = int(((score - eval_threshold) * 1000.0) / (motif_max - eval_threshold))
+                    else:
+                        norm_score = 1000
+                else:  # Keep the original bitscore
+                    if (unique_threshold):
+                        norm_score = score / motif.len
+                    else:
+                        norm_score = score
 
-            # Writing motifs
-            output_file.write("\t".join([genomic_region.chrom,str(p1),str(p2),motif.name,str(norm_score),strand])+"\n")
+                # Writing motifs
+                output_file.write(
+                    "\t".join([genomic_region.chrom, str(p1), str(p2), motif.name, str(norm_score), strand]) + "\n")
+
+
+    except:
+        bg = MOODS.tools.flat_bg(4)
+        results = MOODS.scan.scan_dna(sequence, [motif.pssm_list], bg, [current_threshold], 100)
+
+        for search_result in results:
+            for r in search_result: #(position, score) in search_result:
+                position=r.pos
+                score=r.score
+                # Verifying unique threshold acceptance
+                if(unique_threshold and score/motif.len < unique_threshold): continue
+
+                # If match forward strand
+                if(position >= 0):
+                    p1 = genomic_region.initial + position
+                    strand = "+"
+                # If match reverse strand
+                elif(not motif.is_palindrome):
+                    p1 = genomic_region.initial - position
+                    strand = "-"
+                else: continue
+
+                # Evaluating p2
+                p2 = p1 + motif.len
+
+                # Evaluating score (integer between 0 and 1000 -- needed for bigbed transformation)
+                if(normalize_bitscore): # Normalized bitscore = standardize to integer between 0 and 1000 (needed for bigbed transformation)
+                    if(motif_max > eval_threshold):
+                        norm_score = int( ( (score - eval_threshold) * 1000.0) / (motif_max - eval_threshold) )
+                    else: norm_score = 1000
+                else: # Keep the original bitscore
+                    if(unique_threshold): norm_score = score/motif.len
+                    else: norm_score = score
+
+                # Writing motifs
+                output_file.write("\t".join([genomic_region.chrom,str(p1),str(p2),motif.name,str(norm_score),strand])+"\n")
 
 def match_multiple(motif_name_list, motif_pssm_list, motif_thresh_list, motif_ispalindrome_list, motif_max_list, motif_len_list,
           sequence, genomic_region, output_file):
@@ -102,7 +152,10 @@ def match_multiple(motif_name_list, motif_pssm_list, motif_thresh_list, motif_is
 
     # Performing motif matching
     counter = 0
-    for search_result in search(sequence, motif_pssm_list, motif_thresh_list, absolute_threshold=True, both_strands=True):
+
+    results = MOODS.search(sequence, motif_pssm_list, motif_thresh_list, absolute_threshold=True, both_strands=True)
+
+    for search_result in results:
 
         # Evaluating structures
         curr_index = int(counter/2)
