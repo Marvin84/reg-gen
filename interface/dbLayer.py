@@ -92,7 +92,7 @@ def sortSql(tableHeader):
   sortDataSql = " ORDER BY "+str(sortBy)+ (" ASC" if order == 0 else " DESC")
 
   return sortDataSql
-  
+
 
 def getSelectedExpForExportSql(selectedExperimentIds):
   selectedExpSql = """SELECT e.experiment_id, e.data_type, e.epigenetic_mark, e.project, e.technique, e.genome, bs.biosource_name, f.file AS blueprint_url, u.url AS roadmap_url, u2.original_file_url AS encode_url

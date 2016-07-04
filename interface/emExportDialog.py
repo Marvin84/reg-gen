@@ -93,7 +93,7 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
   # handler for accept button click
   def accept(self):
     # ask user which file to save the matrix to
-    fname = QtGui.QFileDialog.getOpenFileName(self, 'Save Experimental Matrix')
+    fname = QtGui.QFileDialog.getSaveFileName(self, 'Save Experimental Matrix')
 
     # no file selected (canceled)
     if len(fname) == 0:

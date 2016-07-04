@@ -1,8 +1,9 @@
 import sys
 from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
-from design1 import Ui_MainWindow
+from design import Ui_MainWindow
 from emExportDialog import emExportDialog
+from rgtCommandDialog import rgtCommandDialog
 import dbLayer
 
 try:
@@ -39,6 +40,9 @@ class Gui(QtGui.QMainWindow):
     self.emExportDialog = emExportDialog()
     self.emExportDialog.setMainApp(self)
 
+    self.rgtCommandDialog = rgtCommandDialog()
+    self.rgtCommandDialog.setMainApp(self)
+
     # bind sql query for genome and project selectors
     genomeModel = QSqlQueryModel()
     genomeModel.setQuery(dbLayer.getGenomesSql(), self.db)
@@ -54,8 +58,8 @@ class Gui(QtGui.QMainWindow):
 
     # bind main data query to search result table
     self.experimentsModel = QSqlQueryModel()
-    self.experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui), self.db)
     self.ui.dataTable.setModel(self.experimentsModel)
+    self.reloadExperiments()
     
     # selection model
     self.dataTableSelectionModel = self.ui.dataTable.selectionModel()
@@ -172,6 +176,7 @@ class Gui(QtGui.QMainWindow):
   # export button click handler
   # opens export dialog
   def exportMatrix(self):
+    #self.rgtCommand()
     if len(self.selectedExperimentIds) == 0:
       return
 
@@ -179,6 +184,12 @@ class Gui(QtGui.QMainWindow):
     self.emExportDialog.setSelectedExperiments(self.selectedExperimentIds)
     self.emExportDialog.initTable()
     self.emExportDialog.show()
+
+  # show rgt command dialog
+  def rgtCommand(self):
+    # open dialog
+    self.rgtCommandDialog.show()
+    self.rgtCommandDialog.start()
 
 
   # connects signal handlers to widget signals
