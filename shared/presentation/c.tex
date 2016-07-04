@@ -1,3 +1,36 @@
 \begin{frame}%[allowframebreaks]
-	\frametitle{Outsourcing computation to C}
+	\frametitle{Ctypes}
+	\begin{itemize}
+		\item ctypes library \footnote{\url{https://docs.python.org/2/library/ctypes.html}}
+		\begin{itemize}
+			\item C compatible data types
+			\item calling functions in shared libraries
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}%[allowframebreaks]
+	\frametitle{Porting functionality to C}
+	Rewritten the following functions in C:
+	\begin{itemize}
+		\item \texttt{GenomicRegionSet.py:intersect}
+		\item \texttt{GenomicRegionSet.py:jaccard}
+		\item (\texttt{GenomicRegion.py:overlap})
+		\item (\texttt{GenomicRegion.py:\_\_cmp\_\_})
+	\end{itemize}
+\end{frame}
+
+\begin{frame}%[allowframebreaks]
+	\frametitle{}
+	\begin{itemize}
+		\item Bind shared C-library in initialisation step.
+		\item Add flag \texttt{use\_c} to \texttt{intersect} and \texttt{jaccard} to choose whether to use pure python or call C-library.
+		\item Cast GenomicRegionSet's fields to primitive C arrays in order to pass it to the library.
+		\item Also optimise jaccard:
+		\begin{itemize}
+			\item Only size of intersection interesting: Avoid constructing the result GenomicRegionSet.
+			\item The size of the union can be computed from the size of the sets and the size of the intersection: $|A \cup B| = |A| + |B| - |A \cap B|$.
+		\end{itemize}
+	
+	\end{itemize}
 \end{frame}
