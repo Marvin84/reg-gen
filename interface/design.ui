@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>RGT Experiment Browser</string>
   </property>
   <widget class="QWidget" name="Form">
    <layout class="QGridLayout" name="gridLayout_3">
@@ -195,25 +195,6 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QTableView" name="dataTable">
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-          <property name="horizontalScrollMode">
-           <enum>QAbstractItemView::ScrollPerPixel</enum>
-          </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-          <attribute name="verticalHeaderVisible">
-           <bool>true</bool>
-          </attribute>
-          <attribute name="verticalHeaderHighlightSections">
-           <bool>false</bool>
-          </attribute>
-         </widget>
-        </item>
         <item row="1" column="1">
          <widget class="QTableView" name="tableViewMeta">
           <property name="autoScroll">
@@ -239,6 +220,25 @@
           </attribute>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderHighlightSections">
+           <bool>false</bool>
+          </attribute>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTableView" name="dataTable">
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="horizontalScrollMode">
+           <enum>QAbstractItemView::ScrollPerPixel</enum>
+          </property>
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <attribute name="verticalHeaderVisible">
+           <bool>true</bool>
           </attribute>
           <attribute name="verticalHeaderHighlightSections">
            <bool>false</bool>
@@ -366,7 +366,7 @@
            <string>Add</string>
           </property>
           <property name="icon">
-           <iconset resource="icons.qrc">
+           <iconset>
             <normaloff>:/icons/add.png</normaloff>:/icons/add.png</iconset>
           </property>
           <property name="iconSize">
@@ -389,7 +389,7 @@
            <string>Remove</string>
           </property>
           <property name="icon">
-           <iconset resource="icons.qrc">
+           <iconset>
             <normaloff>:/icons/remove.png</normaloff>:/icons/remove.png</iconset>
           </property>
           <property name="iconSize">
@@ -431,7 +431,7 @@
            <string>Export</string>
           </property>
           <property name="icon">
-           <iconset resource="icons.qrc">
+           <iconset>
             <normaloff>:/icons/export.png</normaloff>:/icons/export.png</iconset>
           </property>
           <property name="iconSize">
@@ -486,118 +486,5 @@
  <resources>
   <include location="icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditGeneralSearch</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>544</x>
-     <y>77</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>485</x>
-     <y>77</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditName</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>578</x>
-     <y>88</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>131</x>
-     <y>116</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditDescription</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>539</x>
-     <y>88</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>69</x>
-     <y>143</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditBiosource</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>540</x>
-     <y>92</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>258</x>
-     <y>126</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditTechnique</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>559</x>
-     <y>84</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>249</x>
-     <y>150</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditDataType</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>562</x>
-     <y>86</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>470</x>
-     <y>112</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonClear</sender>
-   <signal>clicked()</signal>
-   <receiver>lineEditEpigenetic</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>588</x>
-     <y>87</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>487</x>
-     <y>142</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
