@@ -1,0 +1,44 @@
+\include{preamble}
+
+\title[Practical Course]{Practical Course in Bioinformatics}
+\subtitle{Software Lab -- Final Presentation}
+\author[M. Berrendorf]{Max Berrendorf \and}
+\institute[]{ZKF Research Group Computational Biology and Bioinformatics\\
+	Helmholtz Institute for Biomedical Engineering\\
+	RWTH University Hospital
+}
+\date{}
+
+\AtBeginSection{
+	\frame{
+		\sectionpage
+	}
+}
+
+\begin{document}
+% ========================== BEGIN TITLE PAGE =========================== %
+\frame{\titlepage}
+
+% ============================= BEGIN TOC ============================= %
+\begin{frame}
+    \frametitle{Outline}
+    \setcounter{tocdepth}{1}
+    \tableofcontents[]
+\end{frame}
+% ============================== END TOC ============================== %
+\section{Outsourcing computation to C}
+\include{c}
+
+\section{Results}
+\include{results}
+
+\begin{frame}
+	\frametitle{The End}
+	\vfill
+	\begin{center}
+		Thank you for your attention!
+	\end{center}
+	\vfill
+\end{frame}
+
+\end{document}

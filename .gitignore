@@ -9,3 +9,12 @@
 build
 dist
 RGT.egg-info/
+# Latex
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+shared/presentation/presentation.pdf
