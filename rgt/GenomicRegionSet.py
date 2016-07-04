@@ -24,11 +24,15 @@ from rgt.Util import GenomeData, OverlapType, AuxiliaryFunctions
 from rgt.GeneSet import GeneSet
 
 # C-Binding of jaccard function
+# Determine path of shared library
 me = os.path.abspath(os.path.dirname(__file__))
 lib = cdll.LoadLibrary(os.path.join(me, "..", "librgt.so"))
+
+# Bind library
 ctypes_jaccardC = lib.jaccard
-ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int),
-                            POINTER(c_int), c_int]
+
+# Specify data types
+ctypes_jaccardC.argtypes = [POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int, POINTER(c_char_p), POINTER(c_int), POINTER(c_int), c_int]
 ctypes_jaccardC.restype = c_double
 
 # C-Binding of intersect overlap function
@@ -1441,7 +1445,7 @@ class GenomicRegionSet:
                 z.add(s2)
             return z
 
-    def jaccardPython(self,query):
+    def jaccard_python(self, query):
         # a = copy.deepcopy(self)
         # b = copy.deepcopy(query)
         b = query
@@ -1464,7 +1468,7 @@ class GenomicRegionSet:
         similarity = inter / uni
         return similarity
 
-    def jaccardC(self, query):
+    def jaccard_c(self, query):
         if not self.sorted:
             self.sort()
         if not query.sorted:
@@ -1523,9 +1527,9 @@ class GenomicRegionSet:
             similarity: (5+4+2)/[(8+10+4)+(10+10)-(5+4+2)] = 11/31
         """
         if use_c:
-            return self.jaccardC(query)
+            return self.jaccard_c(query)
         else:
-            return self.jaccardPython(query)
+            return self.jaccard_python(query)
 
     def within_overlap(self):
         """Check whether there is overlapping within or not."""
