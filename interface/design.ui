@@ -366,7 +366,7 @@
            <string>Add</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="icons.qrc">
             <normaloff>:/icons/add.png</normaloff>:/icons/add.png</iconset>
           </property>
           <property name="iconSize">
@@ -389,7 +389,7 @@
            <string>Remove</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="icons.qrc">
             <normaloff>:/icons/remove.png</normaloff>:/icons/remove.png</iconset>
           </property>
           <property name="iconSize">
@@ -431,7 +431,7 @@
            <string>Export</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="icons.qrc">
             <normaloff>:/icons/export.png</normaloff>:/icons/export.png</iconset>
           </property>
           <property name="iconSize">
@@ -486,5 +486,118 @@
  <resources>
   <include location="icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditGeneralSearch</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>544</x>
+     <y>79</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>453</x>
+     <y>80</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditName</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>589</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>134</x>
+     <y>117</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditDescription</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>570</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>116</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditBiosource</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>537</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditTechnique</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>550</x>
+     <y>94</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>289</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditDataType</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>524</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>479</x>
+     <y>115</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonClear</sender>
+   <signal>clicked()</signal>
+   <receiver>lineEditEpigenetic</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>94</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>487</x>
+     <y>150</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

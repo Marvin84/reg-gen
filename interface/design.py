@@ -211,6 +211,13 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditGeneralSearch.clear)
+        QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditName.clear)
+        QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditDescription.clear)
+        QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditBiosource.clear)
+        QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditTechnique.clear)
+        QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditDataType.clear)
+        QtCore.QObject.connect(self.pushButtonClear, QtCore.SIGNAL(_fromUtf8("clicked()")), self.lineEditEpigenetic.clear)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
