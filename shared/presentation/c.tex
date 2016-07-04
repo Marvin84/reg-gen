@@ -1,10 +1,10 @@
 \begin{frame}%[allowframebreaks]
 	\frametitle{Ctypes}
 	\begin{itemize}
-		\item ctypes library \footnote{\url{https://docs.python.org/2/library/ctypes.html}}
+		\item use \texttt{ctypes} library \footnote{\url{https://docs.python.org/2/library/ctypes.html}} offering
 		\begin{itemize}
 			\item C compatible data types
-			\item calling functions in shared libraries
+			\item calling C-functions in shared libraries from pure Python
 		\end{itemize}
 	\end{itemize}
 \end{frame}
@@ -20,17 +20,29 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}%[allowframebreaks]
-	\frametitle{}
+
+\begin{frame}
+	\frametitle{Binding shared library in initialisation}
+	\lstinputlisting[style=custom_python]{code/binding.py}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flag \texttt{use\_c}}
+		\lstinputlisting[style=custom_python]{code/usec_intersect.py}
+		\lstinputlisting[style=custom_python]{code/usec_jaccard.py}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Casting to primitive C}
+	\lstinputlisting[style=custom_python]{code/casting.py}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Optimised jaccard}
 	\begin{itemize}
-		\item Bind shared C-library in initialisation step.
-		\item Add flag \texttt{use\_c} to \texttt{intersect} and \texttt{jaccard} to choose whether to use pure python or call C-library.
-		\item Cast GenomicRegionSet's fields to primitive C arrays in order to pass it to the library.
-		\item Also optimise jaccard:
-		\begin{itemize}
-			\item Only size of intersection interesting: Avoid constructing the result GenomicRegionSet.
-			\item The size of the union can be computed from the size of the sets and the size of the intersection: $|A \cup B| = |A| + |B| - |A \cap B|$.
-		\end{itemize}
-	
+		\item Only size of intersection interesting: Avoid constructing the result GenomicRegionSet.
+		\item The size of the union can be computed from the size of the sets and the size of the intersection: $|A \cup B| = |A| + |B| - |A \cap B|$.
 	\end{itemize}
 \end{frame}

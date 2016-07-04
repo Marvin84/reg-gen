@@ -13,6 +13,22 @@
 % Additional packages
 \usepackage{color}
 \usepackage{graphicx}
+\usepackage{listings}
+
+\usebeamercolor{block title}
+\colorlet{code}{bg}
+\usebeamercolor{block title alerted}
+\colorlet{keyword}{bg}
+
+\lstdefinestyle{custom_python}{
+	language=Python,
+	basicstyle=\color{code}\ttfamily\scriptsize,
+	breaklines=true,
+	frame=single,
+	keywordstyle=\color{keyword}\ttfamily\scriptsize,
+	otherkeywords={POINTER, self}
+}
+
 
 \title[Practical Course]{Practical Course in Bioinformatics}
 \subtitle{Algorithm Group -- Final Presentation}
