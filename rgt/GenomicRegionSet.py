@@ -1111,10 +1111,11 @@ class GenomicRegionSet:
         if len(self) == 0 or len(y) == 0: return self
 
         # If there is overlap within self or y, they should be merged first.
-        if self.sorted == False:
+        if self.sorted == False: 
             self.sort()
-        if not y.merged: b = y.merge(w_return=True)
+        b = y.merge(w_return=True)
 
+        
         iter_a = iter(self)
         s = iter_a.next()
         last_j = len(b) - 1
