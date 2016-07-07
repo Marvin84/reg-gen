@@ -1,10 +1,12 @@
 from PyQt4 import QtGui
 from PyQt4.QtSql import QSqlQueryModel
 from Ui_emExportDialog import Ui_Dialog
+from rgtCommandDialog import rgtCommandDialog
 import dbLayer
 import re
 import os
 from functools import partial
+import tempfile
 
 class emExportDialog(QtGui.QDialog, Ui_Dialog):
   def __init__(self, parent = None):
@@ -20,6 +22,9 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     # defines which parts of the table contents are replaced by _
     self.escapeExpr = r'[\s,\+\\\/]'
 
+    # initialize rgt run dialog
+    self.rgtCommandDialog = rgtCommandDialog(self)
+
     # initialize combo boxes
     self.groupBy.addItems(self.selectableLabels)
     self.column.addItems(self.selectableLabels)
@@ -28,9 +33,14 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
 
     # bind signal handlers
     self.exportButton.clicked.connect(self.exportButtonHandler)    
-    self.WhereBrowserLineplot.clicked.connect(partial(self.fileDialog, textEdit=self.WhereLineplot, title='Select Result Directory', directory=True))
-    self.WhereBrowserTests.clicked.connect(partial(self.fileDialog, textEdit=self.WhereTests, title='Select Result Directory', directory=True))
-    self.inputBrowser.clicked.connect(partial(self.fileDialog, textEdit=self.input, title='Select Experimental Matrix', directory=False, open=True))
+
+    self.WhereBrowserLineplot.clicked.connect(partial(self.fileDialog, lineEdit=self.WhereLineplot, title='Select Result Directory', directory=True))
+    self.WhereBrowserTests.clicked.connect(partial(self.fileDialog, lineEdit=self.WhereTests, title='Select Result Directory', directory=True))
+    self.inputBrowser.clicked.connect(partial(self.fileDialog, lineEdit=self.input, title='Select Experimental Matrix', directory=False, open=True))
+
+    self.runTests.clicked.connect(self.startTests)
+    self.runLineplot.clicked.connect(self.startLineplot)
+
   
   # initializes the table with the selected experiments from main window
   def initTable(self):
@@ -107,7 +117,7 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
 
 
   # browse file or directory location
-  def fileDialog(self, textEdit=None, title='', open=False, directory=False):
+  def fileDialog(self, lineEdit=None, title='', open=False, directory=False):
     # open or save? directoy or file?
     if not directory:
       dialogFunc = QtGui.QFileDialog.getSaveFileName if not open else QtGui.QFileDialog.getOpenFileName
@@ -118,19 +128,19 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     if title == '':
       title = 'Save as...' if not open else 'Open...'
 
-    # already path given in textEdit?
-    if textEdit != None:
-      path = str(textEdit.text())
+    # already path given in lineEdit?
+    if lineEdit != None:
+      path = str(lineEdit.text())
     else:
       path = ''
 
     # open file dialog
     selectedPath = dialogFunc(self, title, path)
 
-    # user actually selected something -> update textEdit (if any) or return selected path
-    if textEdit != None:
+    # user actually selected something -> update lineEdit (if any) or return selected path
+    if lineEdit != None:
       if selectedPath != '':
-        textEdit.setText(selectedPath)
+        lineEdit.setText(selectedPath)
     else:
       return selectedPath
 
@@ -147,7 +157,7 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
 
 
   # write the current content of the experimental matrix table to given file name
-  def saveEMTableToFile(fname):
+  def saveEMTableToFile(self,fname):
     # write header to selected file
     expMatrix = open(fname, 'w')
     expMatrix.write("\t".join(self.headerLabels)+"\n")
@@ -160,6 +170,51 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
       expMatrix.write("\t".join(row)+"\n")
 
     expMatrix.close()
+
+  def startLineplot(self):
+    # save experimental matrix to temporary file
+    temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
+    self.saveEMTableToFile(temp_file)
+
+    cmdDict = {
+        "mainCmd":   "lineplot"
+      , "em":        temp_file
+      , "title":     "Lineplot"
+      , "output":    str(self.WhereLineplot.text())
+      , "normalize": None if str(self.normalization.currentText()) == "None" else str(self.normalization.currentText()).lower()
+      , "row":       None if str(self.row.currentText()) == "None" else str(self.row.currentText()).lower()
+      , "column":    None if str(self.column.currentText()) == "None" else str(self.column.currentText()).lower()
+      , "color":     None if str(self.color.currentText()) == "None" else str(self.color.currentText()).lower()
+    }
+
+    self.rgtCommandDialog.show()
+    self.rgtCommandDialog.start(cmdDict)
+
+
+  def startTests(self):
+    # save experimental matrix to temporary file
+    temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
+    self.saveEMTableToFile(temp_file)
+
+    cmdDict = {
+        "mainCmd":       str(self.testType.currentText()).lower()
+      , "title":         str(self.testType.currentText())
+      , "output":        str(self.WhereTests.text())
+      , "groupBy":       str(self.groupBy.currentText()).lower()
+      , "randomization": self.randomization.value()
+    }
+
+    # which matrix is which?
+    inputType = str(self.inputType.currentText()).lower()
+    if inputType == "reference":
+      cmdDict["reference"] = str(self.input.text())
+      cmdDict["query"] = temp_file
+    else:
+      cmdDict["reference"] = temp_file
+      cmdDict["query"] = str(self.input.text())
+
+    self.rgtCommandDialog.show()
+    self.rgtCommandDialog.start(cmdDict)
 
 
   def setMainApp(self, mainApp):

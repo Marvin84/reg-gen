@@ -45,7 +45,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -237,6 +237,16 @@
             <string>None</string>
            </property>
           </item>
+          <item>
+           <property name="text">
+            <string>Reads</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Regions</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item row="5" column="1">
@@ -414,6 +424,16 @@
             <string>None</string>
            </property>
           </item>
+          <item>
+           <property name="text">
+            <string>Regions</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Reads</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item row="5" column="0">
@@ -459,6 +479,9 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
