@@ -4,7 +4,8 @@ from Ui_rgtDialog import Ui_Dialog
 class rgtCommandDialog(QtGui.QDialog, Ui_Dialog):
   def __init__(self, parent = None):
     QtGui.QDialog.__init__(self, parent)
-    self.setupUi(self) 
+    self.setupUi(self)
+    self.constructCommand(parent)
 
     self.doc = self.plainTextEdit.document()
 
@@ -31,5 +32,5 @@ class rgtCommandDialog(QtGui.QDialog, Ui_Dialog):
     self.doc.setPlainText(str(self.doc.toPlainText()) + str(processOutput))
 
 
-  def constructCommand(self):
+  def constructCommand(self, exportDialog):
     return "ping google.com"
