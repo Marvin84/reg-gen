@@ -65,6 +65,10 @@ class Gui(QtGui.QMainWindow):
     self.selectedExpModel.setQuery(dbLayer.getSelectedExpSql(self.selectedExperimentIds), self.db)
     self.ui.dataTableSelected.setModel(self.selectedExpModel)
 
+    # start state push buttons
+    self.ui.pushButtonAdd.setEnabled(False)
+    self.ui.pushButtonRemove.setEnabled(False)
+    self.ui.pushButtonExport.setEnabled(False)
 
     # initialize TableViews
     experimentsView = self.ui.dataTable
@@ -85,6 +89,7 @@ class Gui(QtGui.QMainWindow):
   def reloadExperiments(self):
     header = self.ui.dataTable.horizontalHeader()
     self.experimentsModel.setQuery(dbLayer.getDataSql()+dbLayer.buildSqlWhere(self.ui)+dbLayer.sortSql(header),self.db)
+    self.ui.pushButtonAdd.setEnabled(False)
 
   def reloadSelectedExperiments(self):
     header = self.ui.dataTableSelected.horizontalHeader()
@@ -92,6 +97,9 @@ class Gui(QtGui.QMainWindow):
 
     self.ui.dataTableSelected.resizeColumnsToContents()
     self.ui.dataTableSelected.resizeRowsToContents()
+
+    self.ui.pushButtonRemove.setEnabled(False)
+    self.ui.pushButtonExport.setEnabled(True)
     
 
   # handler for changes of filters and comboBoxes
@@ -126,6 +134,7 @@ class Gui(QtGui.QMainWindow):
     experiment_id = record.value("experiment_id").toString()
     self.selectedExperimentIds.add(str(experiment_id))
     self.reloadSelectedExperiments()
+    self.ui.pushButtonExport.setEnabled(True)
 
 
   # double-click handler for selected experiments table
@@ -135,6 +144,7 @@ class Gui(QtGui.QMainWindow):
     experiment_id = record.value("experiment_id").toString()
     self.selectedExperimentIds.discard(str(experiment_id))
     self.reloadSelectedExperiments()
+    self.disablePushButtonRemoveAndExport()
   
   # add button handler
   # adds all selected experiments to experimental matrix
@@ -146,8 +156,7 @@ class Gui(QtGui.QMainWindow):
         experiment_id = record.value("experiment_id").toString()
         self.selectedExperimentIds.add(str(experiment_id))
       self.reloadSelectedExperiments()
-    else:
-      print("Select a dataset")
+      self.ui.pushButtonExport.setEnabled(True)
 
   # remove button handler
   # removes all selected experiments from experimental matrix
@@ -160,8 +169,28 @@ class Gui(QtGui.QMainWindow):
         experiment_id = record.value("experiment_id").toString()
         self.selectedExperimentIds.discard(str(experiment_id))
       self.reloadSelectedExperiments()
+      self.disablePushButtonRemoveAndExport()
+
+  # enable push button add 
+  def enablePushButtonAdd(self):
+    if self.dataTableSelectionModel.hasSelection():
+      self.ui.pushButtonAdd.setEnabled(True)
     else: 
-      print("Select a dataset")
+      self.ui.pushButtonAdd.setEnabled(False)
+  
+  # enable push button remove
+  def enablePushButtonRemove(self):
+    if self.ui.dataTableSelected.selectionModel().hasSelection():
+      self.ui.pushButtonRemove.setEnabled(True)
+    else: 
+      self.ui.pushButtonRemove.setEnabled(False)   
+
+  # disable push button remove and export
+  def disablePushButtonRemoveAndExport(self):
+    self.ui.pushButtonRemove.setEnabled(False)
+    numRows = self.ui.dataTableSelected.model().rowCount()
+    if numRows == 0:
+      self.ui.pushButtonExport.setEnabled(False) 
 
   # clear button click handler
   # resets comboBoxes
@@ -220,6 +249,10 @@ class Gui(QtGui.QMainWindow):
     
     self.connect(self.ui.dataTable.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), self.onFilterInputChange)
     self.connect(self.ui.dataTableSelected.horizontalHeader(), QtCore.SIGNAL('sectionClicked (int)'), self.onSelectedSortingChange)
+
+    # enable/disable pushbuttons
+    self.dataTableSelectionModel.selectionChanged.connect(self.enablePushButtonAdd)
+    self.ui.dataTableSelected.selectionModel().selectionChanged.connect(self.enablePushButtonRemove)
 
 
 if __name__ == "__main__":
