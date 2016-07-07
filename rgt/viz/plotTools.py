@@ -31,6 +31,7 @@ from rgt.Util import GenomeData, OverlapType, Html
 from rgt.CoverageSet import *
 from rgt.motifanalysis.Statistics import multiple_test_correction
 from rgt.helper import pretty
+from time import time
 
 
 # Local test
@@ -378,13 +379,40 @@ def compute_coverage(input):
         result = [input[8], input[9], input[10], input[11], avearr] # Store the array into data list
     te = time.time()
     print("\tComputing "+os.path.basename(input[1])+" . "+input[0].name + "\t\t"+str(datetime.timedelta(seconds=round(te-ts))))
-    return result    
+    return result
+
+def mp_overlap(com, overlap_dict, a, b):
+    #inputs= [com, overlap_dict, indice_a, indice_b]
+    if com.sequences[a].overlap(com.sequences[b]):
+        overlap_dict.update({a:b})
+    return 1
+
 
 def mp_count_intersets(inps):
-    # [ com, self.rlen[ty][r.name], self.mode_count, threshold ]
-    random_r,random_q = inps[0].random_split(size=inps[1])                           
-    d = random_r.intersect_count(random_q, mode_count=inps[2], threshold=inps[3])
-    return d
+    # [ com, self.rlen[ty][r.name], self.mode_count, threshold, use_flag, overlap_dict]
+
+    if inps[2] =="count" and inps[4]==True:
+        #random sampling
+        #just treat the inices of the regions, because you only neede to know, whether they are intersecting or not
+        split = inps[0].random_sample_indices(size=inps[1])
+
+        count=0
+        overlap_dict=inps[5]
+        for key, value in overlap_dict.items():
+            # each entry i:[j] in overlap_dict represents which regions are overlapping with region i
+            # count is incremented, if both regions are not on the same side of the split
+            if (key in split and len(set(value).intersection(split))==0) or (not key in split and len(set(value).intersection(split))>0):
+                count += 1
+
+        c_r= len(split) -count
+        c_q= len(inps[0]) - len(split) - count
+        return [c_r, c_q, count]
+
+    else:
+        #mode_count = bg
+        random_r, random_q = inps[0].random_split(size=inps[1])
+        res = random_r.intersect_count(random_q, mode_count=inps[2], threshold=inps[3])
+        return res
 
 def mp_count_intersect(inputs):
     # q, nalist, mode_count, qlen_dict, threshold, counts, frequency, self_frequency, ty, r
@@ -1969,17 +1997,36 @@ class Intersect:
                         else:
                             com = q.combine(r, change_name=False, output=True)
                             # Randomization
-                            d = []
-                            
-                            inp = [ com, self.rlen[ty][r.name], self.mode_count, threshold ]
-                            mp_input = [ inp for i in range(repeat) ]
+                            overlap_dict = {}
+                            #safe indices of overlapping regions in a hash table
+                            use_new=False
+                            start = time()
+                            if (use_new):
+                                for i in range(0, len(q)-1):
+                                    for j in range(len(q), len(com) - 1):
+                                        if (com.sequences[i].overlap(com.sequences[j])):
+                                            if not i in overlap_dict:
+                                                overlap_dict.update({i:[j]})
+                                            else:
+                                                a=overlap_dict[i]
+                                                a.extend([j])
+                                                overlap_dict[i]=a
+                                #print(len(overlap_dict))
+                                #print(len(q.intersect(r, mode=OverlapType.ORIGINAL)))
+                            elapsed = time() - start
+
+                            start2 = time()
+                            inp = [ com, self.rlen[ty][r.name], self.mode_count, threshold, use_new, overlap_dict]
+                            mp_input = [ inp for i in range(repeat)]
 
                             pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
                             mp_output = pool.map(mp_count_intersets, mp_input)
                             pool.close()
                             pool.join()
 
-
+                            elapsed2= time() - start2
+                            elapsed3=time() - start
+                            print("Matrix: ", elapsed, " and MP: ", elapsed2, " Whole: ", elapsed3)
 
                             #for i in range(repeat):
                             #    random_r,random_q = com.random_split(size=self.rlen[ty][r.name])                           
@@ -1988,7 +2035,7 @@ class Intersect:
                             da = numpy.array(mp_output)
                             
                             exp_m = numpy.mean(da, axis=0)
-                            # print(exp_m)
+                            print(exp_m)
                             # print(obs)
                             chisq, p, dof, expected = stats.chi2_contingency([exp_m,obs])
                             aveinter = exp_m[2]

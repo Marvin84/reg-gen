@@ -22,6 +22,7 @@ import os
 from rgt.GenomicRegion import *
 from rgt.Util import GenomeData, OverlapType, AuxiliaryFunctions
 from rgt.GeneSet import GeneSet
+import numpy as np
 
 # C-Binding of jaccard function
 # Determine path of shared library
@@ -239,6 +240,15 @@ class GenomicRegionSet:
             else:
                 b.add(self.sequences[i])
         return a, b
+
+    def random_sample_indices(self, size):
+
+        indices = range(0, len(self))
+
+        #instead of splitting, only sample ffor representing the split. We just need to know later
+        #wether two regions are on the same side of the split or not
+        return random.sample(indices,size)
+
 
     def write_bed(self, filename):
         """Write GenomicRegions to BED file.
@@ -951,6 +961,8 @@ class GenomicRegionSet:
                 c_b = len(b) - len(inter2)
                 c_ab = len(inter)
                 return c_a, c_b, c_ab
+
+
 
             elif mode_count == "bp":
                 intersect_r = a.intersect(b, mode=OverlapType.OVERLAP)
