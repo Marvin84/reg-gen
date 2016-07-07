@@ -176,6 +176,8 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
     self.saveEMTableToFile(temp_file)
 
+    temp_file = '/daten/Uni/PraktikumBio/work/reg-gen/interface/rgtResults/lineplot/em.txt'
+
     cmdDict = {
         "mainCmd":   "lineplot"
       , "em":        temp_file
