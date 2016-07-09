@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>RGT Experiment Browser</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/icons/mainIcon.png</normaloff>:/icons/mainIcon.png</iconset>
+  </property>
   <widget class="QWidget" name="Form">
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="1" column="0" colspan="2">
