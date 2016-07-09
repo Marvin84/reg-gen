@@ -101,30 +101,26 @@ class GenomicRegionSet:
             - percentage -- input value of left and right can be any positive value or negative value larger than -50 %
             - w_return -- For extend() function in GenomiRegion
         """
-        if not w_return:
-            if percentage:
-                if percentage > -50:
-                    for s in self.sequences:
-                        s.extend(int(len(s)*left/100), int(len(s)*right/100))
-                else:
-                    print("*** Error: Percentage for extension must be larger than 50%%.")
-                    sys.exit(0)
-            else:
+
+        z = GenomicRegionSet(name=self.name)
+        if percentage:
+            if percentage > -50:
                 for s in self.sequences:
-                    s.extend(left, right)
-        else:
-            a = copy.deepcopy(self)
-            if percentage:
-                if percentage > -50:
-                    for s in a.sequences:
-                        s.extend(int(len(s)*left/100), int(len(s)*right/100))
-                else:
-                    print("*** Error: Percentage for extension must be larger than 50%%.")
-                    sys.exit(0)
+                    s.extend(int(len(s) * left / 100), int(len(s) * right / 100))
             else:
-                for s in a.sequences:
+                print("Percentage for extension must be larger than 50%%.")
+                sys.exit(0)
+        else:
+            for s in self.sequences:
+                if w_return:
+                    z.add(s.extend(left, right, w_return=True))
+                else:
                     s.extend(left, right)
-            return a
+
+        if w_return:
+            return z
+        else:
+            return
 
     def sort(self, key=None, reverse=False):
         """Sort Elements by criteria defined by a GenomicRegion.
