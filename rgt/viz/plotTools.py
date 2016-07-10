@@ -13,6 +13,7 @@ import multiprocessing.pool
 import urllib2
 import re
 import numpy
+import time
 from scipy.stats import mstats, wilcoxon, mannwhitneyu, rankdata
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
@@ -31,7 +32,7 @@ from rgt.Util import GenomeData, OverlapType, Html
 from rgt.CoverageSet import *
 from rgt.motifanalysis.Statistics import multiple_test_correction
 from rgt.helper import pretty
-from time import time
+
 
 
 # Local test
@@ -2000,7 +2001,7 @@ class Intersect:
                             overlap_dict = {}
                             #safe indices of overlapping regions in a hash table
                             use_new=False
-                            start = time()
+                            start = time.time()
                             if (use_new):
                                 for i in range(0, len(q)-1):
                                     for j in range(len(q), len(com) - 1):
@@ -2013,9 +2014,9 @@ class Intersect:
                                                 overlap_dict[i]=a
                                 #print(len(overlap_dict))
                                 #print(len(q.intersect(r, mode=OverlapType.ORIGINAL)))
-                            elapsed = time() - start
+                            elapsed = time.time() - start
 
-                            start2 = time()
+                            start2 = time.time()
                             inp = [ com, self.rlen[ty][r.name], self.mode_count, threshold, use_new, overlap_dict]
                             mp_input = [ inp for i in range(repeat)]
 
@@ -2024,8 +2025,8 @@ class Intersect:
                             pool.close()
                             pool.join()
 
-                            elapsed2= time() - start2
-                            elapsed3=time() - start
+                            elapsed2= time.time() - start2
+                            elapsed3=time.time() - start
                             print("Matrix: ", elapsed, " and MP: ", elapsed2, " Whole: ", elapsed3)
 
                             #for i in range(repeat):
