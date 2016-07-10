@@ -202,8 +202,21 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
   def startTests(self):
     # ensure a second matrix has been selected
     if self.input.text().isEmpty():
-      # TODO: show error dialog
+      QtGui.QMessageBox.critical(self, "Input Missing", "Please select a input matrix first.")
       return
+
+    # check if all entries in the current matrix correspond to the same genome
+    genomeIndex = self.headerLabels.index("genome")
+    organism = str(self.emExport.item(0,genomeIndex).text())
+    for r in range(0,self.emExport.rowCount()):
+      if str(self.emExport.item(r,genomeIndex).text()) != organism:
+        res = QtGui.QMessageBox.warning(self, "Multiple Organisms", "Your experimental matrix contains entries from different organisms.\nAre you sure you want to continue?",
+          QtGui.QMessageBox.Yes | QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Cancel)
+        
+        if res == QtGui.QMessageBox.Cancel:
+          return
+
+        break
 
     # save experimental matrix to temporary file
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
