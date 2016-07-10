@@ -345,7 +345,7 @@ class Ui_Dialog(object):
         self.inputType.setItemText(1, _translate("Dialog", "Query", None))
         self.label_11.setText(_translate("Dialog", "Test Type:", None))
         self.testType.setItemText(0, _translate("Dialog", "Projection", None))
-        self.testType.setItemText(1, _translate("Dialog", "Jacquard", None))
+        self.testType.setItemText(1, _translate("Dialog", "Jaccard", None))
         self.testType.setItemText(2, _translate("Dialog", "Intersection", None))
         self.label_12.setText(_translate("Dialog", "Group By:", None))
         self.groupBy.setItemText(0, _translate("Dialog", "None", None))

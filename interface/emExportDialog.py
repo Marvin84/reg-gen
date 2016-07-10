@@ -7,6 +7,7 @@ import re
 import os
 from functools import partial
 import tempfile
+from datetime import datetime
 
 class emExportDialog(QtGui.QDialog, Ui_Dialog):
   def __init__(self, parent = None):
@@ -16,8 +17,8 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     # which columns to export to the matrx
     # needs to coincide with dictionary keys returned by getExperimentExport
     # NOTE: epigenetic_mark corresponds to "factor" in RGT terminology
-    self.headerLabels = ["name","type","file","factor","biosource_name","genome","technique","project"]
-    self.selectableLabels = [                 "factor","biosource_name","genome","technique","project"]
+    self.headerLabels = ["name","type","file","factor","marker","biosource_name","genome","technique","project"]
+    self.selectableLabels = [                 "factor","marker","biosource_name","genome","technique","project"]
 
     # defines which parts of the table contents are replaced by _
     self.escapeExpr = r'[\s,\+\\\/]'
@@ -30,6 +31,12 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     self.column.addItems(self.selectableLabels)
     self.row.addItems(self.selectableLabels)
     self.color.addItems(self.selectableLabels)
+
+    # initialize path line edits
+    now = datetime.now()
+    dateStr = str(now.year)+"-"+str(now.month)+"-"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)
+    self.WhereLineplot.setText(os.path.join(os.getcwd(), "lineplot-"+dateStr))
+    self.WhereTests.setText(os.path.join(os.getcwd(), "assocTest-"+dateStr))
 
     # bind signal handlers
     self.exportButton.clicked.connect(self.exportButtonHandler)    
@@ -72,6 +79,7 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
         , "type": tpe
         , "file": fname
         , "factor": epigenetic_mark
+        , "marker": epigenetic_mark
         , "biosource_name": biosource_name
         , "genome": genome
         , "technique": technique
@@ -176,8 +184,6 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
     self.saveEMTableToFile(temp_file)
 
-    temp_file = '/daten/Uni/PraktikumBio/work/reg-gen/interface/rgtResults/lineplot/em.txt'
-
     cmdDict = {
         "mainCmd":   "lineplot"
       , "em":        temp_file
@@ -194,6 +200,11 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
 
 
   def startTests(self):
+    # ensure a second matrix has been selected
+    if self.input.text().isEmpty():
+      # TODO: show error dialog
+      return
+
     # save experimental matrix to temporary file
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
     self.saveEMTableToFile(temp_file)
@@ -202,8 +213,9 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
         "mainCmd":       str(self.testType.currentText()).lower()
       , "title":         str(self.testType.currentText())
       , "output":        str(self.WhereTests.text())
-      , "groupBy":       str(self.groupBy.currentText()).lower()
+      , "groupBy":       None if str(self.groupBy.currentText()) == "None" else str(self.groupBy.currentText()).lower()
       , "randomization": self.randomization.value()
+      , "organism":      str(self.emExport.item(0,self.headerLabels.index("genome")).text())
     }
 
     # which matrix is which?

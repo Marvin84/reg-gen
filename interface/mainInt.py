@@ -36,7 +36,7 @@ class Gui(QtGui.QMainWindow):
     self.db = connectDB()
 
     # initialize dialogs
-    self.emExportDialog = emExportDialog()
+    self.emExportDialog = emExportDialog(self)
     self.emExportDialog.setMainApp(self)
 
     # bind sql query for genome and project selectors

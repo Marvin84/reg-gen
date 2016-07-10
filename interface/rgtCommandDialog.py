@@ -58,6 +58,7 @@ class rgtCommandDialog(QtGui.QDialog, Ui_Dialog):
       , "groupBy":   "-g"
       , "reference": "-r"
       , "query":     "-q"
+      , "organism":  "-organism"
     }
     params = []
 
