@@ -1,4 +1,4 @@
-import sys
+import sys, time
 from PyQt4 import QtCore, QtSql, QtGui
 from PyQt4.QtSql import QSqlQueryModel,QSqlDatabase,QSqlQuery
 from design import Ui_MainWindow
@@ -257,6 +257,19 @@ class Gui(QtGui.QMainWindow):
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
+
+    splash_pix = QtGui.QPixmap('icons/splashSmall.png')
+    splash = QtGui.QSplashScreen(splash_pix, QtCore.Qt.WindowStaysOnTopHint)
+    splash.setMask(splash_pix.mask())
+    splash.show()
+    
+    start = time.time()
+    while time.time() - start < 0.5:
+        time.sleep(0.001)
+        app.processEvents()
+
     Form = Gui()
     Form.showMaximized()
+
+    splash.finish(Form)
     sys.exit(app.exec_())
