@@ -192,8 +192,6 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
     self.saveEMTableToFile(temp_file)
 
-    temp_file = '/daten/Uni/PraktikumBio/work/reg-gen/interface/rgtResults/lineplot/em.txt'
-
     cmdDict = {
         "mainCmd":   "lineplot"
       , "em":        temp_file
@@ -231,9 +229,6 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     # save experimental matrix to temporary file
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
     self.saveEMTableToFile(temp_file)
-    
-    # debug
-    temp_file = '/daten/Uni/PraktikumBio/work/reg-gen/interface/rgtResults/tests/query.em'
 
     cmdDict = {
         "mainCmd":       str(self.atTestComboBox.currentText()).lower()
