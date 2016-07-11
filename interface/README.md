@@ -18,7 +18,9 @@ Interface
 > The interface is based on [QT](http://www.qt.io/) and its Python wrapper PyQT. Please ensure you installed the latest version [PyQT](https://www.riverbankcomputing.com/software/pyqt/download) which depends on [SIP](https://www.riverbankcomputing.com/software/sip/download). We tested PyQT 4.11.4 and SIP 4.18.
 >
 > In addition, please install the SQLite driver for QT:
+>
 > For Linux: `sudo apt-get install libqt4-sql-sqlite`
+>
 > For Mac: `sudo port install qt4-mac-sqlite3-plugin`
 
 To run the interface, execute `python mainInt.py`. If you do not see any data in the tables, ensure that your `db/deepBlue.db` is accessible and contains data (see above).
