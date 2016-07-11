@@ -27,26 +27,31 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
     self.rgtCommandDialog = rgtCommandDialog(self)
 
     # initialize combo boxes
-    self.groupBy.addItems(self.selectableLabels)
-    self.column.addItems(self.selectableLabels)
-    self.row.addItems(self.selectableLabels)
-    self.color.addItems(self.selectableLabels)
+    self.atGroupByComboBox.addItems(filter(lambda f: f != "factor", self.selectableLabels)) # do not include "factor"
+    self.lpRowComboBox.addItems(self.selectableLabels)
+    self.lpColorComboBox.addItems(self.selectableLabels)
+    self.lpColumnComboBox.addItems(self.selectableLabels)
 
     # initialize path line edits
     now = datetime.now()
-    dateStr = str(now.year)+"-"+str(now.month)+"-"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)
-    self.WhereLineplot.setText(os.path.join(os.getcwd(), "lineplot-"+dateStr))
-    self.WhereTests.setText(os.path.join(os.getcwd(), "assocTest-"+dateStr))
+    dateStr = str(now.year)+str(now.month)+str(now.day)+"-"+str(now.hour)+str(now.minute)
+    self.lpOutputLineEdit.setText(os.path.join(os.getcwd(), "regions2reads-"+dateStr))
+    self.atOutputLineEdit.setText(os.path.join(os.getcwd(), "regions2regions-"+dateStr))
 
     # bind signal handlers
     self.exportButton.clicked.connect(self.exportButtonHandler)    
 
-    self.WhereBrowserLineplot.clicked.connect(partial(self.fileDialog, lineEdit=self.WhereLineplot, title='Select Result Directory', directory=True))
-    self.WhereBrowserTests.clicked.connect(partial(self.fileDialog, lineEdit=self.WhereTests, title='Select Result Directory', directory=True))
-    self.inputBrowser.clicked.connect(partial(self.fileDialog, lineEdit=self.input, title='Select Experimental Matrix', directory=False, open=True))
+    self.lpOutputButton.clicked.connect(partial(self.fileDialog, lineEdit=self.lpOutputLineEdit, title='Select Result Directory', directory=True))
+    self.atOutputButton.clicked.connect(partial(self.fileDialog, lineEdit=self.atOutputLineEdit, title='Select Result Directory', directory=True))
+    self.atInputButton.clicked.connect(partial(self.fileDialog, lineEdit=self.atInputLineEdit, title='Select Experimental Matrix', directory=False, open=True))
 
-    self.runTests.clicked.connect(self.startTests)
-    self.runLineplot.clicked.connect(self.startLineplot)
+    self.atRunButton.clicked.connect(self.startRegion2RegionTest)
+    self.lpRunButton.clicked.connect(self.startRegion2ReadTest)
+
+    self.atTestComboBox.currentIndexChanged.connect(self.testTypeChangeHandler)
+
+    # initial
+    self.testTypeChangeHandler()
 
   
   # initializes the table with the selected experiments from main window
@@ -163,6 +168,9 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
 
     self.saveEMTableToFile(fname)
 
+  def testTypeChangeHandler(self):
+    testType = str(self.atTestComboBox.currentText()).lower()
+    self.atRandomizationSpinBox.setEnabled(testType != "projection")
 
   # write the current content of the experimental matrix table to given file name
   def saveEMTableToFile(self,fname):
@@ -179,29 +187,31 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
 
     expMatrix.close()
 
-  def startLineplot(self):
+  def startRegion2ReadTest(self):
     # save experimental matrix to temporary file
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
     self.saveEMTableToFile(temp_file)
+
+    temp_file = '/daten/Uni/PraktikumBio/work/reg-gen/interface/rgtResults/lineplot/em.txt'
 
     cmdDict = {
         "mainCmd":   "lineplot"
       , "em":        temp_file
       , "title":     "Lineplot"
-      , "output":    str(self.WhereLineplot.text())
-      , "normalize": None if str(self.normalization.currentText()) == "None" else str(self.normalization.currentText()).lower()
-      , "row":       None if str(self.row.currentText()) == "None" else str(self.row.currentText()).lower()
-      , "column":    None if str(self.column.currentText()) == "None" else str(self.column.currentText()).lower()
-      , "color":     None if str(self.color.currentText()) == "None" else str(self.color.currentText()).lower()
+      , "output":    str(self.lpOutputLineEdit.text())
+      , "normalize": None if str(self.lpSharedYComboBox.currentText()) == "None" else str(self.lpSharedYComboBox.currentText()).lower()
+      , "row":       None if str(self.lpRowComboBox.currentText()) == "None" else str(self.lpRowComboBox.currentText()).lower()
+      , "column":    None if str(self.lpColumnComboBox.currentText()) == "None" else str(self.lpColumnComboBox.currentText()).lower()
+      , "color":     None if str(self.lpColorComboBox.currentText()) == "None" else str(self.lpColorComboBox.currentText()).lower()
     }
 
     self.rgtCommandDialog.show()
     self.rgtCommandDialog.start(cmdDict)
 
 
-  def startTests(self):
+  def startRegion2RegionTest(self):
     # ensure a second matrix has been selected
-    if self.input.text().isEmpty():
+    if self.atInputLineEdit.text().isEmpty():
       QtGui.QMessageBox.critical(self, "Input Missing", "Please select a input matrix first.")
       return
 
@@ -215,30 +225,33 @@ class emExportDialog(QtGui.QDialog, Ui_Dialog):
         
         if res == QtGui.QMessageBox.Cancel:
           return
-
+        
         break
 
     # save experimental matrix to temporary file
     temp_file = os.path.join(tempfile.mkdtemp(), "export.em")
     self.saveEMTableToFile(temp_file)
+    
+    # debug
+    temp_file = '/daten/Uni/PraktikumBio/work/reg-gen/interface/rgtResults/tests/query.em'
 
     cmdDict = {
-        "mainCmd":       str(self.testType.currentText()).lower()
-      , "title":         str(self.testType.currentText())
-      , "output":        str(self.WhereTests.text())
-      , "groupBy":       None if str(self.groupBy.currentText()) == "None" else str(self.groupBy.currentText()).lower()
-      , "randomization": self.randomization.value()
+        "mainCmd":       str(self.atTestComboBox.currentText()).lower()
+      , "title":         str(self.atTestComboBox.currentText())
+      , "output":        str(self.atOutputLineEdit.text())
+      , "groupBy":       None if str(self.atGroupByComboBox.currentText()) == "None" else str(self.atGroupByComboBox.currentText()).lower()
+      , "randomization": self.atRandomizationSpinBox.value()
       , "organism":      str(self.emExport.item(0,self.headerLabels.index("genome")).text())
     }
 
     # which matrix is which?
-    inputType = str(self.inputType.currentText()).lower()
+    inputType = str(self.atInputTypeComboBox.currentText()).lower()
     if inputType == "reference":
-      cmdDict["reference"] = str(self.input.text())
+      cmdDict["reference"] = str(self.atInputLineEdit.text())
       cmdDict["query"] = temp_file
     else:
       cmdDict["reference"] = temp_file
-      cmdDict["query"] = str(self.input.text())
+      cmdDict["query"] = str(self.atInputLineEdit.text())
 
     self.rgtCommandDialog.show()
     self.rgtCommandDialog.start(cmdDict)
