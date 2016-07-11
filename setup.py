@@ -380,7 +380,7 @@ setup(name = "RGT",
 ###################################################################################################
 
 # Removing data.config.path
-remove(data_config_path_file_name)
+#remove(data_config_path_file_name)
 
 # Modifying Permissions when Running Superuser/Admin
 # $SUDO_USER exists only if you are sudo, and returns the original user name

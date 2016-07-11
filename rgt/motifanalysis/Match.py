@@ -56,10 +56,10 @@ def match_single(motif, sequence, genomic_region, output_file, unique_threshold=
 
     except:
         bg = MOODS.tools.flat_bg(4)
-        results = MOODS.scan.scan_dna(sequence, [motif.pssm_list], bg, [current_threshold], 100)
+        results = MOODS.scan.scan_dna(sequence, [motif.pssm_list], bg, [current_threshold], 7)
 
     for search_result in results:
-        for r in search_result: #(position, score) in search_result:
+        for r in search_result:
             try:
                 position=r.pos
                 score=r.score

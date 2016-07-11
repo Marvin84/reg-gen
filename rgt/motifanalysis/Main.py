@@ -18,12 +18,13 @@ from .. GenomicRegion import GenomicRegion
 from .. GenomicRegionSet import GenomicRegionSet
 from Motif import Motif, Thresholds
 from Match import match_single
-from Statistics import multiple_test_correction, get_fisher_dict
+from Statistics import multiple_test_correction, get_fisher_dict, get_fisher_dict_new
 from Util import Input, Result
 
 # External
 from pysam import Fastafile
 from fisher import pvalue
+from random import seed
 
 """
 Contains functions to common motif analyses.
@@ -56,6 +57,7 @@ def main():
     ###################################################################################################
 
     # Parameters
+    #seed(42)
     current_version = "0.0.1"
     usage_message = ("\n--------------------------------------------------\n"
                      "The motif analysis program performs various motif-based analyses. "
@@ -563,7 +565,7 @@ def main_enrichment():
     elif(random_mpbs_file_name.split(".")[-1] != "bed"): pass # XXX TODO main_error_handler.throw_error("ME_RAND_NOT_BED_BB")
 
     # Evaluating random statistics
-    rand_c_dict, rand_d_dict = get_fisher_dict(motif_names_grouped, random_region_bed_name, random_mpbs_bed_name, output_location_results,
+    rand_c_dict, rand_d_dict = get_fisher_dict_new(motif_names_grouped, random_region_bed_name, random_mpbs_bed_name, output_location_results,
                                                return_geneset=False)
 
     # Removing bed files if bb exist
@@ -664,10 +666,10 @@ def main_enrichment():
                 nev_mpbs_file_name_temp = os.path.join(curr_output_folder_name, output_mpbs_filtered_nev+"_temp.bed")
                 ev_mpbs_file = open(ev_mpbs_file_name_temp,"w")
                 nev_mpbs_file = open(nev_mpbs_file_name_temp,"w")
-                curr_a_dict, curr_b_dict, ev_genelist_dict = get_fisher_dict(motif_names_grouped, ev_regions_file_name, curr_mpbs_bed_name,
+                curr_a_dict, curr_b_dict, ev_genelist_dict = get_fisher_dict_new(motif_names_grouped, ev_regions_file_name, curr_mpbs_bed_name,
                                                                              curr_output_folder_name, return_geneset=True,
                                                                              output_mpbs_file=ev_mpbs_file, color=ev_color)
-                curr_c_dict, curr_d_dict, nev_genelist_dict = get_fisher_dict(motif_names_grouped, nev_regions_file_name, curr_mpbs_bed_name,
+                curr_c_dict, curr_d_dict, nev_genelist_dict = get_fisher_dict_new(motif_names_grouped, nev_regions_file_name, curr_mpbs_bed_name,
                                                                               curr_output_folder_name, return_geneset=True,
                                                                               output_mpbs_file=nev_mpbs_file, color=nev_color)
                 ev_mpbs_file.close()
@@ -790,7 +792,7 @@ def main_enrichment():
                 # Calculating statistics
                 ev_mpbs_file_name_temp = os.path.join(curr_output_folder_name, output_mpbs_filtered_ev+"_temp.bed")
                 ev_mpbs_file = open(ev_mpbs_file_name_temp,"w")
-                curr_a_dict, curr_b_dict, ev_genelist_dict = get_fisher_dict(motif_names_grouped, ev_regions_file_name, curr_mpbs_bed_name,
+                curr_a_dict, curr_b_dict, ev_genelist_dict = get_fisher_dict_new(motif_names_grouped, ev_regions_file_name, curr_mpbs_bed_name,
                                                                              curr_output_folder_name, return_geneset=True,
                                                                              output_mpbs_file=ev_mpbs_file, color=ev_color)
                 ev_mpbs_file.close()
